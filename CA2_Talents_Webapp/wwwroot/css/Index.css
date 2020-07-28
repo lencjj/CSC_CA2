@@ -1,0 +1,18 @@
+﻿body {
+}
+
+.header {
+    text-align: center;
+    font-weight: bold;
+    margin-left: 2rem;
+    margin-bottom: 2rem;
+}
+
+#submitBtn {
+    background: linear-gradient(120deg, #1abc9c, #3498db);
+    background-size: 200%;
+}
+
+#submitBtn:hover {
+    background-position: right;
+}
