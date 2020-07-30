@@ -8,6 +8,7 @@ using Amazon.Extensions.CognitoAuthentication;
 using CA2_Talents_Webapp.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Stripe;
 
 namespace CA2_Talents_Webapp.Controllers
@@ -23,15 +24,18 @@ namespace CA2_Talents_Webapp.Controllers
         string premiumPlan = "price_1H9nnZHhYK7K9XttJdGEg31G";
 
         [HttpPost]
-        public async Task<IActionResult> SignInUser(LoginCreds loginCreds)
+        public async Task<IActionResult> SignInUser(string loginEmail, string loginPassword)
         {
             IAmazonCognitoIdentityProvider provider = new AmazonCognitoIdentityProviderClient(new Amazon.Runtime.AnonymousAWSCredentials(), region);
             CognitoUserPool userPool = new CognitoUserPool(poolId, appClientId, provider);
-            CognitoUser user = new CognitoUser(loginCreds.Email, appClientId, userPool, provider);
+            CognitoUser user = new CognitoUser(loginEmail, appClientId, userPool, provider);
+            Console.Clear();
+            Console.WriteLine("Here: " + loginEmail);
+            Console.WriteLine(loginPassword);
 
             InitiateSrpAuthRequest authRequest = new InitiateSrpAuthRequest()
             {
-                Password = loginCreds.Password
+                Password = loginPassword
             };
 
             AuthFlowResponse authResponse = null;
@@ -66,8 +70,18 @@ namespace CA2_Talents_Webapp.Controllers
 
                 }
                 Console.WriteLine(userType);
-
-                return Redirect("/Home/Login");
+                if (userType == "You are registered as a standard user")
+                {
+                    return Redirect("/Home/StandardUser");
+                }
+                else if (userType == "You are registered as a premium user") 
+                {
+                    return Redirect("/Home/PremiumUser");
+                }
+                else
+                {
+                    return Redirect("/Home/Login");
+                }        
             }
             catch (Exception ex)
             {

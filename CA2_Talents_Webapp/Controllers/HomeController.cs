@@ -29,7 +29,17 @@ namespace CA2_Talents_Webapp.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult GuestUser()
+        {
+            return View();
+        }
+
+        public IActionResult StandardUser()
+        {
+            return View();
+        }
+
+        public IActionResult PremiumUser()
         {
             return View();
         }
