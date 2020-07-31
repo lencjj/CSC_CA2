@@ -10,6 +10,9 @@ using Stripe.BillingPortal;
 using CA2_Talents_Webapp.Models;
 using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
+using Google.Cloud.BigQuery.V2;
+using System.Configuration;
+using System.Globalization;
 using DynamoDb.libs.DynamoDb;
 
 namespace CA2_Talents_Webapp.Controllers
@@ -67,6 +70,9 @@ namespace CA2_Talents_Webapp.Controllers
         {
             try
             {
+                // Change this file accordingly
+                string credential_path = @"C:\Users\Brian Chong\Desktop\SP Year 3\CSC\Assignment 2\My Map Projects-2ff7e55dc99d.json";
+                Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
                 StripeConfiguration.ApiKey = "sk_test_51GxEfiHhYK7K9XttqUpv12yjajZLs01TY95VhvzVfPEb5Ed8GaF3GFUV2iuhFZGkBgHoNib4iHBDlpALqWPplth6008EdMnnaw";
                 int planNo = chargeDto.Plan;
                 String planName = "";
@@ -116,14 +122,16 @@ namespace CA2_Talents_Webapp.Controllers
                 var service = new SubscriptionService();
                 Subscription subscription = service.Create(options);
 
+                
                 SignUpUser(chargeDto.Email, chargeDto.Password, customer.Id).Wait();
-                AddUser(chargeDto.Email, planName, dateTimeNow.ToString(), chargeDto.CardName, chargeDto.Password, chargeDto.Phone, "Registered");
+                InsertBQData(chargeDto.Email, planNo);
 
                 return Redirect("/Home/Index?Msg=Success");
-            } catch(Exception ex)
+            }
+            catch (Exception ex)
             {
-                return Redirect("/Home/Index?Msg=" +ex.Message);
-            }      
+                return Redirect("/Home/Index?Msg=" + ex.Message);
+            }
         }
 
         private static async Task SignUpUser(string email, string password, string customerId)
@@ -154,6 +162,54 @@ namespace CA2_Talents_Webapp.Controllers
             }
 
         }
+
+        private static void InsertBQData(string email, int plan)
+        {
+            try
+            {
+                string projectId = "turnkey-guild-265901";
+                DateTime now = DateTime.Now;
+                string planName = "";
+                Console.Clear();
+                Console.WriteLine("email: " + email);
+                Console.WriteLine("plan: " + plan);
+
+                BigQueryClient client = BigQueryClient.Create(projectId);
+
+                // Create the dataset if it doesn't exist.
+                BigQueryDataset dataset = client.GetOrCreateDataset("mydata");
+
+                // Create the table if it doesn't exist.
+                BigQueryTable table = dataset.GetOrCreateTable("customer", new TableSchemaBuilder
+                {
+                    { "email", BigQueryDbType.String },
+                    { "subscriptionStarted", BigQueryDbType.Timestamp },
+                    { "planType", BigQueryDbType.String } //BigQueryDbType.Int64
+                }.Build());
+
+                if (plan == 1)
+                {
+                    planName = "Standard user";
+                }
+                else
+                {
+                    planName = "Premium user";
+                }
+
+                //Insert data into table
+                table.InsertRow(new BigQueryInsertRow
+                {
+                    { "email", email },
+                    { "subscriptionStarted", DateTimeOffset.UtcNow.ToUnixTimeSeconds() },
+                    { "planType", planName }
+                });
+                Console.WriteLine("Inserted: " + email + "successfully");
+            }// End of try
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: " + ex);
+            }
+        }// End of insertBQData
 
         [HttpPost]
         public ActionResult CreateSession()

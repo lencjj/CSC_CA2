@@ -9,6 +9,7 @@ using CA2_Talents_Webapp.Models;
 using DynamoDb.libs.DynamoDb;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Stripe;
 
 namespace CA2_Talents_Webapp.Controllers
@@ -40,7 +41,6 @@ namespace CA2_Talents_Webapp.Controllers
             var response = await _updateUser.UpdateUserLastAccessed(email, lastaccessed);
             return Ok(response);
         }
-
         [HttpPost]
         public async Task<IActionResult> SignInUser(LoginCreds loginCreds)
         {
@@ -85,8 +85,19 @@ namespace CA2_Talents_Webapp.Controllers
 
                 }
                 Console.WriteLine(userType);
+                if (userType == "You are registered as a standard user")
+                {
+                    return Redirect("/Home/StandardUser/" + email);
+                }
+                else if (userType == "You are registered as a premium user")
+                {
+                    return Redirect("/Home/PremiumUser");
+                }
+                else
+                {
+                    return Redirect("/Home/Login");
+                }
                 await UpdateUserLastAccessed(loginCreds.Email, "Logged In");
-                return Redirect("/Home/Login");
             }
             catch (Exception ex)
             {

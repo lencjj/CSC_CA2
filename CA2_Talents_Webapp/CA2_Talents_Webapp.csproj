@@ -14,7 +14,8 @@
     <PackageReference Include="AWSSDK.CognitoIdentity" Version="3.3.101.114" />
     <PackageReference Include="AWSSDK.CognitoIdentityProvider" Version="3.3.111.10" />
     <PackageReference Include="AWSSDK.Core" Version="3.3.107.28" />
-    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.3.106.28" />
+    <PackageReference Include="Google.Cloud.BigQuery.V2" Version="2.0.0" /> 
+	<PackageReference Include="AWSSDK.DynamoDBv2" Version="3.3.106.28" />
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.3.101" />
     <PackageReference Include="jquery.noty" Version="2.3.5" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
