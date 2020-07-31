@@ -56,8 +56,13 @@ namespace CA2_Talents_Webapp
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
+                    name: "standard",
+                    template: "{controller=Home}/{action=StandardUser}/{name}"
+                    );
+
+                routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Home}/{action=Index}/{id?}");               
             });
         }
     }

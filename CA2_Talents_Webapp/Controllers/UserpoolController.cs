@@ -23,19 +23,16 @@ namespace CA2_Talents_Webapp.Controllers
         string standardPlan = "price_1H9njJHhYK7K9XttfEulEs63";
         string premiumPlan = "price_1H9nnZHhYK7K9XttJdGEg31G";
 
-        [HttpPost]
-        public async Task<IActionResult> SignInUser(string loginEmail, string loginPassword)
+        [HttpPost]//string loginEmail, string loginPassword
+        public async Task<IActionResult> SignInUser(LoginCreds loginCreds)
         {
             IAmazonCognitoIdentityProvider provider = new AmazonCognitoIdentityProviderClient(new Amazon.Runtime.AnonymousAWSCredentials(), region);
             CognitoUserPool userPool = new CognitoUserPool(poolId, appClientId, provider);
-            CognitoUser user = new CognitoUser(loginEmail, appClientId, userPool, provider);
-            Console.Clear();
-            Console.WriteLine("Here: " + loginEmail);
-            Console.WriteLine(loginPassword);
+            CognitoUser user = new CognitoUser(loginCreds.Email, appClientId, userPool, provider);
 
             InitiateSrpAuthRequest authRequest = new InitiateSrpAuthRequest()
             {
-                Password = loginPassword
+                Password = loginCreds.Password
             };
 
             AuthFlowResponse authResponse = null;
@@ -72,7 +69,7 @@ namespace CA2_Talents_Webapp.Controllers
                 Console.WriteLine(userType);
                 if (userType == "You are registered as a standard user")
                 {
-                    return Redirect("/Home/StandardUser");
+                    return Redirect("/Home/StandardUser/" + email);
                 }
                 else if (userType == "You are registered as a premium user") 
                 {
