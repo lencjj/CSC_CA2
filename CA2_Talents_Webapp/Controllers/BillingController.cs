@@ -70,12 +70,12 @@ namespace CA2_Talents_Webapp.Controllers
         {
             try
             {
-                // Change this file accordingly
-                string credential_path = @"C:\Users\Brian Chong\Desktop\SP Year 3\CSC\Assignment 2\My Map Projects-2ff7e55dc99d.json";
+                string relativePath = @"../../CSC_CA2/CA2_Talents_Webapp/GoogleBigQuery.json";
+                string credential_path = System.IO.Path.GetFullPath(relativePath);
                 Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
                 StripeConfiguration.ApiKey = "sk_test_51GxEfiHhYK7K9XttqUpv12yjajZLs01TY95VhvzVfPEb5Ed8GaF3GFUV2iuhFZGkBgHoNib4iHBDlpALqWPplth6008EdMnnaw";
                 int planNo = chargeDto.Plan;
-                String planName = "";
+                string planName = "";
                 DateTime dateTimeNow = DateTime.Now;
 
                 //Create customer
@@ -122,15 +122,20 @@ namespace CA2_Talents_Webapp.Controllers
                 var service = new SubscriptionService();
                 Subscription subscription = service.Create(options);
 
-                
-                SignUpUser(chargeDto.Email, chargeDto.Password, customer.Id).Wait();
+                // Google Big Query
                 InsertBQData(chargeDto.Email, planNo);
+
+                // DynamoDb 
+                AddUser(chargeDto.Email, planName, dateTimeNow.ToString(), chargeDto.CardName, chargeDto.Password, chargeDto.Phone, "Registered");
+
+                // Cognito
+                SignUpUser(chargeDto.Email, chargeDto.Password, customer.Id).Wait();
 
                 return Redirect("/Home/Index?Msg=Success");
             }
             catch (Exception ex)
             {
-                return Redirect("/Home/Index?Msg=" + ex.Message);
+                return Redirect("/Home/Register?Msg=" + ex.Message);
             }
         }
 

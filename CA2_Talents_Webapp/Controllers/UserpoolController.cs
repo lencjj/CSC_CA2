@@ -87,17 +87,18 @@ namespace CA2_Talents_Webapp.Controllers
                 Console.WriteLine(userType);
                 if (userType == "You are registered as a standard user")
                 {
+                    await UpdateUserLastAccessed(loginCreds.Email, "Logged In");
                     return Redirect("/Home/StandardUser/" + email);
                 }
                 else if (userType == "You are registered as a premium user")
                 {
+                    await UpdateUserLastAccessed(loginCreds.Email, "Logged In");
                     return Redirect("/Home/PremiumUser");
                 }
                 else
-                {
+                { 
                     return Redirect("/Home/Login");
                 }
-                await UpdateUserLastAccessed(loginCreds.Email, "Logged In");
             }
             catch (Exception ex)
             {

@@ -1,107 +1,22 @@
-﻿@{
+﻿
+@{
     ViewData["Title"] = "Home Page";
 }
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-<link rel="stylesheet" href="~/css/Index.css">
-<style>
-    .focus {
-        border: solid blue 1px;
-    }
-
-    .error {
-        border: solid red 1px;
-    }
-</style>
-
-<script src="https://js.stripe.com/v3/"></script>
+<link rel="stylesheet" href="~/css/Login.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.2/js/toastr.min.js"></script>
-<h3 class="header" id="registerHeader">Register as a user for the Life Time Talents application </h3>
-<br />
-<div class="container">
-    <div class="row">
-        <div class="col-md-6 col-sm-offset-3">
-            <form action="/Billing/CreateSubscription" method="post" id="payment-form">
-                <div class="form-group">
-                    <label for="cardName">Card Name</label>
-                    <input type="text" class="form-control" name="cardName" id="cardName" placeholder="Card Name">
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" class="form-control" name="email" id="email" placeholder="Email">
-                </div>
-
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" class="form-control" name="password" id="password" placeholder="Password">
-                </div>
-
-                <div class="form-group">
-                    <label for="password">Confirm Password</label>
-                    <input type="password" class="form-control" name="confirmPassword" id="confirmPassword" placeholder="Confirm Password">
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Phone Number</label>
-                    <input type="tel" class="form-control" name="phone" id="phone" placeholder="Phone Number">
-                </div>
-
-                <label for="plan">Plan</label>
-                <select name="plan" class="form-control" id="plan">
-                    <option value="1">Standard</option>
-                    <option value="2">Premium</option>
-                </select>
-                <br />
-
-
-                <div class="form-group">
-                    <label for="card-number">
-                        Credit or debit card number
-                    </label>
-                    <div id="card-number">
-                        <!-- A Stripe Element will be inserted here. -->
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label for="card-cvc">
-                                CVC
-                            </label>
-                            <div id="card-cvc">
-                                <!-- A Stripe Element will be inserted here. -->
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label for="card-exp">
-                                Exp
-                            </label>
-                            <div id="card-exp">
-                                <!-- A Stripe Element will be inserted here. -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-
-                <!-- Used to display form errors. -->
-                <div id="card-errors" role="alert"></div>
-
-                <div class="form-group">
-                    <button class="form-control btn btn-primary" id="submitBtn">Submit Payment</button>
-                </div>
-            </form>
-            <a href="/Home/Login">Already a user? Login here...</a>
-            <a href="/Home/GuestUser">Continue as guest</a>
-        </div>
-    </div>
-</div>
-
+<style>
+    hr {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 0;
+        border-top: 1px solid #eeeeee;
+    }
+</style>
 <script>
     toastr.options = {
         "closeButton": false,
@@ -120,121 +35,49 @@
         "showMethod": "fadeIn",
         "hideMethod": "fadeOut"
     }
+    $(document).ready(function () {
+        var msg = getUrlParameter("Msg");
 
-    var msg = getUrlParameter("Msg");
-
-
-    if (msg == null) {
-    } else if (msg =="Success") {
-        toastr.success('Successfully registered!');
-    } else {
-        toastr.error('Error registering!');
-    }
-
-    function getUrlParameter(sParam) {
-        var sPageURL = window.location.search.substring(1),
-            sURLVariables = sPageURL.split('&'),
-            sParameterName,
-            i;
-
-        for (i = 0; i < sURLVariables.length; i++) {
-            sParameterName = sURLVariables[i].split('=');
-
-            if (sParameterName[0] === sParam) {
-                return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
-            }
-        }
-    }
-
-    $('#submitBtn').on('click', function () {
-        var password = $('#password').val();
-        var confirmPassword = $('#confirmPassword').val();
-        if (confirmPassword != password) {
-            var confPasswordInput = document.getElementById('confirmPassword');
-            confPasswordInput.setCustomValidity("Passwords must match!")
-        }
-    });
-
-    // Create a Stripe client.
-    var stripe = Stripe('pk_test_51GxEfiHhYK7K9XttVB8HosQTYJ8e37d9TETJqQGkT5K5nubjtIWPHneMW2v2CaBGBHJWhxDj907xEsq8WmnkF9F900aCoHWPKf');
-
-    // Create an instance of Elements.
-    var elements = stripe.elements();
-
-    // Create an instance of the card Element.
-    var card = elements.create('cardNumber', {
-        classes: {
-            //default styles
-            base: "form-control",
-            focus: "focus",
-            invalid: "error"
-        }
-    });
-
-    var cvc = elements.create('cardCvc', {
-        classes: {
-            //default styles
-            base: "form-control",
-            focus: "focus",
-            invalid: "error"
-        }
-    });
-
-    var exp = elements.create('cardExpiry', {
-        classes: {
-            //default styles
-            base: "form-control",
-            focus: "focus",
-            invalid: "error"
-        }
-    });
-
-    // Add an instance of the card Element into the `card-element` <div>.
-    card.mount('#card-number');
-    cvc.mount('#card-cvc');
-    exp.mount('#card-exp');
-
-    // Handle real-time validation errors from the card Element.
-    card.on('change', function (event) {
-        var displayError = document.getElementById('card-errors');
-        if (event.error) {
-            displayError.textContent = event.error.message;
+        if (msg == null) {
+        } else if (msg == "Success") {
+            toastr.success('Successfully registered!');
         } else {
-            displayError.textContent = '';
+            toastr.error('Error registering!');
         }
+
     });
-
-    // Handle form submission.
-    var form = document.getElementById('payment-form');
-    form.addEventListener('submit', function (event) {
-        event.preventDefault();
-
-        stripe.createToken(card).then(function (result) {
-            if (result.error) {
-                // Inform the user if there was an error.
-                var errorElement = document.getElementById('card-errors');
-                errorElement.textContent = result.error.message;
-            } else {
-                // Send the token to your server.
-                stripeTokenHandler(result.token);
-            }
-        });
-    });
-
-    // Submit the form with the token ID.
-    function stripeTokenHandler(token) {
-        // Insert the token ID into the form so it gets submitted to the server
-        var form = document.getElementById('payment-form');
-        var hiddenInput = document.createElement('input');
-        hiddenInput.setAttribute('type', 'hidden');
-        hiddenInput.setAttribute('name', 'stripeToken');
-        hiddenInput.setAttribute('value', token.id);
-        form.appendChild(hiddenInput);
-
-        // Submit the form
-        form.submit();
-    }
 </script>
 
+<form action="/Userpool/SignInUser" method="post" class="login-form">
+    <h1>Login</h1>
+    <div class="inputContainer" id="emailInputContainer">
+        <input type="email" name="email" id="email">
+        <span data-placeholder="Email"></span>
+    </div>
 
+    <div class="inputContainer" id="passwordInputContainer">
+        <input type="password" name="password" id="password">
+        <span data-placeholder="Password"></span>
+    </div>
+
+    <input type="submit" class="loginBtn" value="Login">
+
+    <div class="bottom-text">
+        <a href="/Home/GuestUser">Continue as guest</a>
+        <hr />
+        <a href="/Home/Register" class="reg-tag">Register</a>
+    </div>
+</form>
+
+<script type="text/javascript">
+    $(".inputContainer input").on("focus", function () {
+        $(this).addClass("focus");
+    });
+
+    $(".inputContainer input").on("blur", function () {
+        if ($(this).val() == "") {
+            $(this).removeClass("focus");
+        }
+    });
+</script>
 
