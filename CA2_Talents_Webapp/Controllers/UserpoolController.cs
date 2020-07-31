@@ -6,6 +6,7 @@ using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
 using Amazon.Extensions.CognitoAuthentication;
 using CA2_Talents_Webapp.Models;
+using DynamoDb.libs.DynamoDb;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Stripe;
@@ -21,6 +22,24 @@ namespace CA2_Talents_Webapp.Controllers
 
         string standardPlan = "price_1H9njJHhYK7K9XttfEulEs63";
         string premiumPlan = "price_1H9nnZHhYK7K9XttJdGEg31G";
+
+        // DynamoDb
+        private readonly IUpdateUser _updateUser;
+
+        // Constructor
+        public UserpoolController(IUpdateUser updateUser)
+        {
+            //_getUser = getUser;
+            _updateUser = updateUser;
+        }
+
+        // DynamoDb methods -------------------------------------------------------------------------------------- 
+        [HttpPut]
+        public async Task<IActionResult> UpdateUserLastAccessed(string email, string lastaccessed)
+        {
+            var response = await _updateUser.UpdateUserLastAccessed(email, lastaccessed);
+            return Ok(response);
+        }
 
         [HttpPost]
         public async Task<IActionResult> SignInUser(LoginCreds loginCreds)
@@ -66,13 +85,13 @@ namespace CA2_Talents_Webapp.Controllers
 
                 }
                 Console.WriteLine(userType);
-
+                await UpdateUserLastAccessed(loginCreds.Email, "Logged In");
                 return Redirect("/Home/Login");
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Login failed: " + ex.Message);
-                return Redirect("/Home/Login");
+                return Redirect("/Home/Login?Msg=" + ex.Message);
             }
         }
     }

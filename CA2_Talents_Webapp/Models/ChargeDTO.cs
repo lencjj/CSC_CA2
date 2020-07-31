@@ -9,6 +9,7 @@ namespace CA2_Talents_Webapp.Models
     {
         public string CardName { get; set; }
         public string Email { get; set; }
+        public string Password { get; set; }
         public string Phone { get; set; }
         public int Plan { get; set; }
         public string StripeToken { get; set; }
