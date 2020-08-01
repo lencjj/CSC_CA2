@@ -54,6 +54,16 @@ namespace CA2_Talents_Webapp.Controllers
             return View();
         }
 
+        public IActionResult StandardTalent(string name)
+        {
+            if (name.Length > 0)
+                TempData["name"] = name;
+            else
+                TempData["name"] = "no name";
+            TempData.Keep();
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
