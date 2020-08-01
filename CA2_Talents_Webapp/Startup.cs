@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Amazon.DynamoDBv2;
+using System.IO;
+using DynamoDb.libs.DynamoDb;
 
 namespace CA2_Talents_Webapp
 {
@@ -17,10 +20,13 @@ namespace CA2_Talents_Webapp
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            Configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
         }
 
-        public IConfiguration Configuration { get; }
+        public IConfiguration Configuration { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -34,6 +40,22 @@ namespace CA2_Talents_Webapp
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            // Jing Hui's dynamoDB
+            //services.AddMvc();
+            services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
+
+            Environment.SetEnvironmentVariable("AWS_ACCESS_KEY_ID", Configuration["AWS:AccessKey"]);
+            Environment.SetEnvironmentVariable("AWS_SECRET_ACCESS_KEY", Configuration["AWS:SecretKey"]);
+            Environment.SetEnvironmentVariable("AWS_REGION", Configuration["AWS:Region"]);
+
+            services.AddAWSService<IAmazonDynamoDB>();
+
+            services.AddSingleton<ICreateTable, CreateTable>();
+            services.AddSingleton<IAddUser, AddUser>();
+            services.AddSingleton<IGetUser, GetUser>();
+            services.AddSingleton<IUpdateUser, UpdateUser>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,11 +75,19 @@ namespace CA2_Talents_Webapp
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
+            // Jing Hui's dynamoDB
+            //app.UseMvc();
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
+                    name: "standard",
+                    template: "{controller=Home}/{action=StandardUser}/{name}"
+                    );
+
+                routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Home}/{action=Index}/{id?}");               
             });
         }
     }
