@@ -156,7 +156,7 @@ namespace CA2_Talents_Webapp.Controllers
                     { "subscriptionStarted", DateTimeOffset.UtcNow.ToUnixTimeSeconds() },
                     { "planType", planName }
                 });
-                Console.WriteLine("Inserted: " + email + "successfully");
+                Console.WriteLine("Inserted: " + email + " successfully");
             }// End of try
             catch (Exception ex)
             {
