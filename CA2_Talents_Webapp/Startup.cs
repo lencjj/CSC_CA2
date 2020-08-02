@@ -87,6 +87,9 @@ namespace CA2_Talents_Webapp
                 app.UseHsts();
             }
 
+            // JingHui's SQL Database
+            //app.UseDataEngineProviders().AddDataEngine("talentdb-2", @"Data Source=;Provider=;Initial Catalog=", "talentdb");
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
