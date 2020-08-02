@@ -76,24 +76,24 @@ namespace CA2_Talents_Webapp.Controllers
                 {
                     if (subscriptions.ElementAt(i).Plan.Id.Equals(standardPlan))
                     {
-                        userType = "You are registered as a standard user";
+                        userType = "Standard user";
                     }
                     else if (subscriptions.ElementAt(i).Plan.Id.Equals(premiumPlan))
                     {
-                        userType = "You are registered as a premium user";
+                        userType = "Premium user";
                     }
 
                 }
                 Console.WriteLine(userType);
-                if (userType == "You are registered as a standard user")
+                if (userType == "Standard user")
                 {
                     await UpdateUserLastAccessed(loginCreds.Email, "Logged In");
-                    return Redirect("/Home/StandardUser/" + email);
+                    return Redirect("/Home/Main/" + email + "/" + userType);
                 }
-                else if (userType == "You are registered as a premium user")
+                else if (userType == "Premium user")
                 {
                     await UpdateUserLastAccessed(loginCreds.Email, "Logged In");
-                    return Redirect("/Home/PremiumUser");
+                    return Redirect("/Home/Main/" + email + "/" + userType);
                 }
                 else
                 { 

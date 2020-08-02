@@ -82,6 +82,7 @@ namespace CA2_Talents_Webapp.Controllers
             return View();
         }
 
+
         public IActionResult StandardUser(string name)
         {
             if (name.Length>0)
@@ -92,8 +93,18 @@ namespace CA2_Talents_Webapp.Controllers
             return View();
         }
 
-        public IActionResult PremiumUser()
+        public IActionResult Main(string name, string plan)
         {
+            if (name.Length > 0 && plan.Length > 0) {
+                TempData["name"] = name;
+                TempData["plan"] = plan;
+            }
+            else
+            {
+                TempData["name"] = "no name";
+                TempData["plan"] = "no plan";
+            }              
+            TempData.Keep();
             return View();
         }
 
@@ -102,16 +113,11 @@ namespace CA2_Talents_Webapp.Controllers
             return View();
         }
 
-        public IActionResult StandardTalent(string name)
+        public IActionResult Discussion()
         {
-            if (name.Length > 0)
-                TempData["name"] = name;
-            else
-                TempData["name"] = "no name";
-            TempData.Keep();
             return View();
         }
-        
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

@@ -1,0 +1,682 @@
+﻿<h1>@TempData["plan"]</h1>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+<script src='https://kit.fontawesome.com/a076d05399.js'></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+
+<style>
+    .imgUp {
+        margin-bottom: 15px;
+        margin-right: 0;
+        width: 240px;
+    }
+
+    .imagePreview {
+        width: 100%;
+        height: 160px;
+        background-position: center center;
+        background-color: #fff;
+        background-size: cover;
+        background-repeat: no-repeat;
+        display: inline-block;
+        box-shadow: 0px -3px 6px 2px rgba(0,0,0,0.2);
+    }
+
+    #talentsDatatable th.sorting, #talentsDatatable th.sorting_asc {
+        display: none;
+    }
+
+    #createBtn {
+        color: white;
+        font-size: 1.5rem;
+        display: block;
+        margin: auto 2rem auto auto;
+    }
+
+    .talentLabel {
+        font-weight: bold;
+        font-size: 1.8rem;
+    }
+
+    .talentContent {
+        font-size: 1.6rem;
+    }
+
+    .rewardsIconRow {
+        margin-top: 2rem;
+    }
+
+    #commentBtn {
+        margin-top: 2rem;
+    }
+
+    /* The Close Button */
+    .close {
+        color: #aaaaaa;
+        float: right;
+        margin-left: auto;
+        font-weight: bold;
+    }
+
+        .close:hover,
+        .close:focus {
+            color: red;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .close span {
+            font-size: 3.5rem;
+        }
+
+    #createTalentsBtn {
+        background-color: cornflowerblue;
+        color: white;
+        font-size: 1.6rem;
+        margin: 0.75rem 0rem 0 auto;
+        padding: 8px 14px;
+        border: none;
+    }
+
+    .imgCreateTalents {
+        margin: auto 1rem auto auto;
+        width: 20rem;
+    }
+
+    .imageCreateTalentsPreview {
+        width: 100%;
+        height: 210px;
+        background-position: center center;
+        background-color: #fff;
+        background-size: cover;
+        background-repeat: no-repeat;
+        display: inline-block;
+        box-shadow: 0px -3px 6px 2px rgba(0,0,0,0.2);
+    }
+
+    #createTalentUploadImgBtn {
+        width: 0px;
+        height: 0px;
+        overflow: hidden;
+    }
+
+    #createTalentsImgBtn {
+        display: block;
+        border-radius: 0px;
+        box-shadow: 0px 4px 6px 2px rgba(0,0,0,0.2);
+        margin-top: -5px;
+        background-color: cornflowerblue;
+        border-style: none;
+    }
+
+    #exampleModalLongTitle {
+        font-family: sans-serif;
+    }
+
+    #createRewardDiv {
+        margin: 0 auto 2rem;
+    }
+
+
+</style>
+
+<div class="body">
+
+    <script>
+        var editMode = false;
+        function displaySuccessNoti(msg) {
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": false,
+                "positionClass": "toast-bottom-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+            toastr.success(msg);
+        }
+        ;
+
+        function displayFailNoti(msg) {
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": false,
+                "positionClass": "toast-bottom-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+            toastr.error(msg);
+        }
+        ;
+    </script>
+
+    @*email = @TempData["name"];
+        plan = @TempData["plan"];*@
+    <form action="/Billing/InsertBQData" method="post">
+        <input id="name" name="username" type="hidden" value="@TempData["name"]" />
+        <input id="plan" name="userplan" type="hidden" value="@TempData["plan"]" />
+        <button class="btn btn-primary" id="publishToBQBtn">Publish data to BQ</button>
+    </form>
+
+    <!-- Delete Reward Modal Start-->
+    <div class="modal fade bd-example-modal-lg" id="deleteRewardModal" tabindex="-1" role="dialog" aria-labelledby="deleteRewardModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title" id="deleteRewardModalTitle">Delete Confirmation</h1>
+                    <button class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="deleteMessage"></div>
+
+                <form action="../GIE_DeleteRewardServlet">
+                    <input type="hidden" id="deleteRewardID" name="deleteRewardID" class="deleteRewardID">
+
+                    <div class="modal-footer">
+                        <button id="deleteModalCancelBtn" type="button" class="btn btn-secondary" data-dismiss="modal">CANCEL</button>
+                        <button id="deleteModalDeleteBtn" type="submit" class="btn btn-primary" onClick="resetMode()">
+                            DELETE
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <!--Delete Reward Modal End-->
+
+    <input class="btn btn-success" type="button" id="createBtn" value="CREATE" data-toggle="modal" data-target="#createRewardsModal">
+    <hr>
+
+    <table cellpadding="0" cellspacing="0"
+           border="0" class="row-border"
+           id="talentsDatatable" style="width:100%">
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody id="talentsTableBody">
+        </tbody>
+
+    </table>
+</div>
+
+<!-- Create Rewards Modal -->
+<div class="modal fade bd-example-modal-lg" id="createRewardsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-right" role="document">
+        <div class="modal-content">
+            <div class="modal-header ">
+                <h1 class="modal-title " id="exampleModalLongTitle">Create Rewards</h1>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <!-- Image Container -->
+            <div class="modal-body">
+
+                <form class="form-horizontal " id="step2">
+                    <div class="form-row" id="createImgContainer">
+                        <div class="imgCreateTalents col-md-5">
+                            <div class="imageCreateTalentsPreview"></div>
+                            <label class="btn btn-primary" id="createTalentsImgBtn">
+                                Upload<input type="file" class="createTalentsUploadFile img" id="createTalentUploadImgBtn" value="Upload Photo" accept="image/*">
+                            </label>
+                        </div><!-- col-2 -->
+                        <!-- Product Name -->
+                        <div class="form-group col-md-5 align-items-center justify-content-center" id="createRewardDiv">
+
+                            <div class="form-group" id="creNameDiv">
+                                <label for="createName" class="fieldHeader">Title</label>
+                                <input type="text" class="form-control form-control-lg" id="createName" name="createName" placeholder="Enter product name..." maxlength="16" required>
+                            </div>
+
+                            <div class="form-group" id="creNameDiv">
+                                <label for="createName" class="fieldHeader">Product Name</label>
+                                <input type="text" class="form-control form-control-lg" id="createName" name="createName" placeholder="Enter product name..." maxlength="16" required>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="form-group" id="createDesc">
+                                <label for="createDescription">Description</label>
+                                <textarea class="form-control rounded-0" id="createDesc" rows="3" name="createDescription" placeholder="Enter description..." maxlength="100" required></textarea>
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" id="createRewardModalBtn" class="btn btn-primary">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Create Rewards Modal End -->
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+
+<script>
+    //var rewardListLength = document.getElementById("rewardListLength").value;
+    var editIcon, uploadBtn, webAmt, startDate, endDate, uploadBtnColor,
+        rewardTitle, cross, createRewardStart, createRewardEnd,
+        rewardDesc, rewardCat, rewardPrice, counter, trVal, msg;
+    //var createRewardStart = document.getElementById("createRewardStartDate");
+    //var createRewardEnd = document.getElementById("createRewardEndDate");
+    // Start of document css and validation on load
+    $('#talentsDatatable').DataTable({
+        pagingType: 'full_numbers'
+    });
+
+
+    // Filter table
+    $("input[type='search']").on("keyup", function () {
+        var value = $(this).val().toLowerCase();
+        $("#talentsDatatable tr").filter(function () {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+        });
+    });
+
+    $('#talentsTableBody').html('');
+    for (var i = 0; i < 3; i++) {
+        //let record = talentList[i];//Use the record variable to reference the object in the array
+        //The for-loop code here begins building and inserting the cells<td> and rows<tr>
+        //into the <tbody> element.
+        let $cellElement = null;
+        //Start --- Defining the row element to hold
+
+        let $rowElement = $(`<tr name="manageRewardsTR" value="${i}"></tr>`);
+        //$cellElement = $(`<td>${record.rowNumber}</td>`);
+        //Add dynamic ids later
+        $cellElement = $(`<td>
+                            <div class="imgUp">
+                                <div class="imagePreview"></div>
+                                <label class="btn btn-primary" id="rewardsImgBtn${i}">
+                                    Upload<input type="file" class="uploadFile img" id="uploadImgBtn${i}" value="Upload Photo" accept="image/*" disabled>
+                                </label>
+                            </div><!-- col-2 -->
+                        </td>`);
+        $rowElement.append($cellElement);
+        $cellElement = $(`<td><div  id="rewardContentColumn">
+                                <div class="rewardColumn">
+                                    <div class="row">
+                                        <p class="col-md-6 talentLabel">Title: </p>
+                                        <p id="talentTitle${i}" class ="talentContent" onkeypress="return (this.innerText.length <= 16)">
+                                            title here
+                                        </p>
+                                    </div>
+                                    <div class="row">
+                                        <p class="col-md-6 talentLabel">Name: </p>
+                                        <p id="talentName${i}" class ="talentContent" onkeypress="return (this.innerText.length <= 100)">
+                                            name here
+                                        </p>
+                                    </div>
+                                    <div class="row">
+                                        <p class="col-md-6 talentLabel">Description:</p>
+                                        <p id="talentDesc${i}" class ="talentContent" onkeypress="return (this.innerText.length <= 100)">
+                                            desc here
+                                        </p>
+                                    </div>
+                                </div>
+                            </div></td>`);
+        $rowElement.append($cellElement);
+
+        $cellElement = $(`<td style="vertical-align: top;"><div id="rewardContentIconsColumn">
+                                <div class="flex-column" id="manageRewardIcons">
+                                    <div class="rewardsIconRow">
+                                        <button id="cancelBtn${i}" onclick="cancelEdit(${i})" style="display:none">Cancel</button>
+                                        <span aria-hidden="true" id="editIcon${i}" value="${i}" class="editIcon"><i id="iEdit${i}" class="far fa-edit"></i></span>
+                                        <span id="crossIcon${i}" aria-hidden="true" data-toggle="modal" data-target="#deleteRewardModal"
+                                              onClick="insertDeleteVals()"
+                                              ><i class="fas fa-times"></i></span>
+                                        <p id="hiddenID${i}" hidden="true"><%=rewards.get(i).getRewardID()%></p>
+                                    </div>
+                                    <input class="btn btn-primary commentBtnClass" onclick="goToDiscussion()" type="button" id="commentBtn" value="Comment">
+                                </div>
+                            </div></td>`);
+
+        $rowElement.append($cellElement);
+        $('#talentsTableBody').append($rowElement);//inserting a new row
+        //End-- Defining the row element to hold lesson type information
+    }//End of for loop
+
+    $('.editIcon').click(function () {
+        var triggerID = $(this).attr("value");
+        toggleEditMode(triggerID);
+    });
+
+    //for loop for dynamic element IDs
+    for (var x = 0; x < 3; x++) {
+        editIcon = document.getElementById("editIcon" + x); //+x
+        uploadBtn = document.getElementById("uploadImgBtn" + x);
+        uploadBtnColor = document.getElementById("rewardsImgBtn" + x);
+        talentTitle = document.getElementById("talentTitle" + x);
+        cross = document.getElementById("crossIcon" + x);
+        talentDesc = document.getElementById("talentDesc" + x);
+        talentName = document.getElementById("talentName" + x);
+
+        // Add required attribute to manage reward input fields and default cursor to uploadBtn
+        uploadBtnColor.style.cursor = "default";
+        // Trigger popover help text on hover
+        $('.editIcon').popover({
+            content: "Click here to edit",
+            html: true,
+            placement: 'bottom'
+        });
+        $('tr[name="manageRewardsTR"]').hover(function () {
+            trVal = $(this).attr("value");
+            $('#editIcon' + trVal).popover('show');
+        }, function () {
+            $('#editIcon' + trVal).popover('hide');
+        });
+        $('#crossIcon' + x).css("pointer-events", "none");
+
+        // CSS styles
+        uploadBtn.style.width = "0px";
+        uploadBtn.style.height = "0px";
+        uploadBtn.style.overflow = "hidden";
+        uploadBtnColor.style.display = "block";
+        uploadBtnColor.style.borderRadius = "0px";
+        uploadBtnColor.style.boxShadow = "0px 4px 6px 2px rgba(0,0,0,0.2)";
+        uploadBtnColor.style.marginTop = "-5px";
+        uploadBtnColor.style.backgroundColor = "#bababa";
+        uploadBtnColor.style.borderStyle = "none";
+        talentTitle.style.fontWeight = "lighter";
+        talentTitle.style.fontFamily = "sans-serif";
+        editIcon.style.color = "lightgrey";
+        editIcon.style.margin = "0 0.25rem";
+        editIcon.style.fontSize = "2.5rem";
+        cross.style.fontSize = "2.5rem";
+        cross.style.color = "lightgrey";
+        cross.style.margin = "0 0.25rem";
+        $('#editIcon' + x).hover(function () {
+            $(this).css("color", "orange");
+        }, function () {
+            $(this).css("color", "lightgrey");
+        });
+        editIcon.style.cursor = "pointer";
+
+    }
+    // End of document css and validation on load
+
+    function resetMode() {
+        editMode = false;
+    }
+
+    var title;
+    var description;
+    var name;
+
+
+    function toggleEditMode(editIconID) {
+
+        if (!editMode) { //add dynamic id here
+            //Store original data
+            title = $.trim($('#talentTitle' + editIconID).text());
+            name = $.trim($('#talentName' + editIconID).text());
+            description = $.trim($('#talentDesc' + editIconID).text());
+            msg = "Editing mode enabled";
+            displaySuccessNoti(msg);
+            editMode = true;
+            // Turn On border highlight
+            $('#cancelBtn' + editIconID).show();
+            $('#cancelBtn' + editIconID).css("border", "solid 1px #2681ff30");
+            $('#cancelBtn' + editIconID).css("border-radius", ".5rem");
+            $('#cancelBtn' + editIconID).css("font-size", "1.6rem");
+            $('#cancelBtn' + editIconID).css("margin-right", ".5rem");
+            $('#talentTitle' + editIconID).unbind("mouseenter mouseleave");
+            $('#talentTitle' + editIconID).css("border", "solid 1px #2681ff");
+            $('#talentDesc' + editIconID).css("border", "solid 1px #2681ff");
+            $('#talentName' + editIconID).css("border", "solid 1px #2681ff");
+
+            // Turn off disabled property
+            $('#crossIcon' + editIconID).css("pointer-events", "auto");
+            $('#uploadImgBtn' + editIconID).removeAttr("disabled");
+            $('#talentTitle' + editIconID).attr("contenteditable", true);
+            $('#talentDesc' + editIconID).attr("contenteditable", true);
+            $('#talentName' + editIconID).attr("contenteditable", true);
+            $('#rewardsImgBtn' + editIconID).css("cursor", "pointer");
+            $('#iEdit' + editIconID).addClass('fas fa-check').removeClass('far fa-edit');
+            $('#crossIcon' + editIconID).css("color", "red");
+            $('#iEdit' + editIconID).css("color", "#33cc33");
+            $('#rewardsImgBtn' + editIconID).css("background-color", "#F8A909");
+
+            // Set hover for icons
+            $('#crossIcon' + editIconID).hover(function () {
+                $('#crossIcon' + editIconID).css("color", "red");
+                $('#crossIcon' + editIconID).css("cursor", "pointer");
+            }, function () {
+                $('#crossIcon' + editIconID).css("color", "red");
+            });
+
+            $('#iEdit' + editIconID).hover(function () {
+                $('#iEdit' + editIconID).css("color", "#33cc33");
+            }, function () {
+                $('#iEdit' + editIconID).css("color", "#33cc33");
+            });
+
+            $('tr').hover(function () {
+                $('.editIcon').popover('hide');
+            }, function () {
+                $('.editIcon').popover('hide');
+            });
+
+            for (var i = 0; i < 3; i++) {
+
+                if (i != editIconID) {
+                    counter = i;
+                    $('#editIcon' + counter).css("pointer-events", "none");
+                }
+            }
+
+        } else if (editMode) {
+            $('#cancelBtn' + editIconID).prop('disabled', true);
+            updateReward(editIconID);
+        }
+    }
+
+    //Logic for image preview in create rewards modal
+    $(function () {
+        $(document).on("change", ".createRewardsUploadFile", function () {
+            var uploadFile = $(this);
+            var files = !!this.files ? this.files : [];
+            if (!files.length || !window.FileReader)
+                return; // no file selected, or no FileReader support
+
+            if (/^image/.test(files[0].type)) { // only image file
+                var reader = new FileReader(); // instance of the FileReader
+                reader.readAsDataURL(files[0]); // read the local file
+
+                reader.onloadend = function () { // set image data as background of div
+                    //alert(uploadFile.closest(".upimage").find('.imagePreview').length);
+                    uploadFile.closest(".imgCreateRewards").find('.imageCreateRewardsPreview').css("background-image", "url(" + this.result + ")");
+                };
+            }
+
+        });
+    });
+    //Logic for image preview in manage rewards
+    $(function () {
+        $(document).on("change", ".uploadFile", function () {
+            var uploadFile = $(this);
+            var files = !!this.files ? this.files : [];
+            if (!files.length || !window.FileReader)
+                return; // no file selected, or no FileReader support
+
+            if (/^image/.test(files[0].type)) { // only image file
+                var reader = new FileReader(); // instance of the FileReader
+                reader.readAsDataURL(files[0]); // read the local file
+
+                reader.onloadend = function () { // set image data as background of div
+                    //alert(uploadFile.closest(".upimage").find('.imagePreview').length);
+                    uploadFile.closest(".imgUp").find('.imagePreview').css("background-image", "url(" + this.result + ")");
+                };
+            }
+        });
+    });
+
+    // Delete modal Message - Imm
+    function insertDeleteVals() {
+        var div = document.getElementById('deleteMessage');
+
+        //$('#deleteRewardID').val(rewardID);
+
+        div.innerHTML = "Are you sure you want to delete &#34;" + title + "&#34; ?";
+    }
+
+    function cancelEdit(editIconID) {
+        document.getElementById('talentTitle' + editIconID).innerHTML = title;
+        document.getElementById('talentDesc' + editIconID).innerHTML = description;
+        document.getElementById('talentName' + editIconID).innerHTML = name;
+
+        msg = "Editing mode disabled";
+        displayFailNoti(msg);
+        editMode = false;
+        // Turn off border highlight
+        $('#talentTitle' + editIconID).css("border", "none");
+        $('#talentDesc' + editIconID).css("border", "none");
+        $('#talentName' + editIconID).css("border", "none");
+        // Turn on disabled property
+        $('#crossIcon' + editIconID).css("pointer-events", "none");
+        $('#uploadImgBtn' + editIconID).attr("disabled", true);
+        $('#talentTitle' + editIconID).attr("contenteditable", false);
+        $('#talentDesc' + editIconID).attr("contenteditable", false);
+        $('#talentName' + editIconID).attr("contenteditable", false);
+        $('#iEdit' + editIconID).addClass('far fa-edit').removeClass('fas fa-check');
+        $('#crossIcon' + editIconID).css("color", "lightgrey");
+        $('#iEdit' + editIconID).css("color", "lightgrey");
+        $('#rewardsImgBtn' + editIconID).css("background-color", "#bababa");
+        $('#rewardsImgBtn' + editIconID).css("cursor", "default");
+        $('#crossIcon' + editIconID).hover(function () {
+            $('#crossIcon' + editIconID).css("color", "lightgrey");
+            $('#crossIcon' + editIconID).css("cursor", "default");
+        }, function () {
+            $('#crossIcon' + editIconID).css("color", "lightgrey");
+        });
+        $('#iEdit' + editIconID).hover(function () {
+            $('#iEdit' + editIconID).css("color", "var(--pri-color)");
+        }, function () {
+            $('#iEdit' + editIconID).css("color", "lightgrey");
+        });
+        $('tr[name="manageRewardsTR"]').hover(function () {
+            trVal = $(this).attr("value");
+            $('#editIcon' + trVal).popover('show');
+        }, function () {
+            $('#editIcon' + trVal).popover('hide');
+        });
+
+        for (var n = 0; n < 3; n++) {
+            if (n != editIconID) {
+                counter = n;
+                $('#editIcon' + counter).css("pointer-events", "auto");
+            }
+        }
+        $('#cancelBtn' + editIconID).hide();
+    }
+
+    //function updateReward(i) {
+    //    var rewardID = $.trim($('#hiddenID' + i).text());
+    //    var title = $.trim($('#talentTitle' + i).text());
+    //    var description = $.trim($('#talentDesc' + i).text());
+    //    var name = $.trim($('#talentName' + i).text());
+
+    //    $.ajax({
+    //        url: '../GIE_EditRewardServlet',
+    //        type: 'post',
+    //        data: {
+    //            rewardID: rewardID,
+    //            name: name,
+    //            description: description,
+    //            title: title,
+    //        },
+    //        success: function (result) {
+    //            if (result === "Reward updated successfully") {
+    //                window.location.href = "../GIE_AllRewardsServlet?Msg=" + result;
+    //            } else {
+    //                var msg = "Reward update failed";
+    //                window.location.href = "../GIE_AllRewardsServlet?Msg=" + msg;
+    //            }
+    //        },
+    //        error: function () {
+    //            var msg = "Reward update failed";
+    //            window.location.href = "../GIE_AllRewardsServlet?Msg=" + msg;
+    //        }
+    //    });
+    //}
+
+    $(document).ready(function () {
+        var msg = getUrlParameter("Msg");
+
+        if (msg == null) {
+        } else if (msg == "Success") {
+            displaySuccessNoti('Published to BQ successfully!');
+        } else {
+            displayFailNoti('Error publishing to BQ');
+        }
+
+        var url = window.location.href;
+        if (url.includes("Premium")) {
+            // Do nothing
+        }
+        else if (url.includes("Standard")) {
+            //$('.commentBtnClass').hide();
+            //var commentBtnClass = document.getElementsByClassName("commentBtnClass");
+            //commentBtnClass.style.visibility = "hidden";
+        }
+        else {
+
+        }
+
+    });
+
+    function getUrlParameter(sParam) {
+        var sPageURL = window.location.search.substring(1),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+            }
+        }
+    }
+
+    function goToDiscussion() {
+        window.location.href = "/Home/Discussion";
+    }
+
+</script>
