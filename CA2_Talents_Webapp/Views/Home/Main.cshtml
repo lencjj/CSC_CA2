@@ -282,6 +282,8 @@
 </div>
 <!-- Create Rewards Modal End -->
 
+<input type="hidden" id="user" value="@TempData["name"]" />
+
 <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
@@ -291,9 +293,10 @@
     //var rewardListLength = document.getElementById("rewardListLength").value;
     var editIcon, uploadBtn, webAmt, startDate, endDate, uploadBtnColor,
         rewardTitle, cross, createRewardStart, createRewardEnd,
-        rewardDesc, rewardCat, rewardPrice, counter, trVal, msg;
-    //var createRewardStart = document.getElementById("createRewardStartDate");
-    //var createRewardEnd = document.getElementById("createRewardEndDate");
+        rewardDesc, rewardCat, rewardPrice, counter, trVal, msg, user;
+
+    user = document.getElementById("user").value;
+    
     // Start of document css and validation on load
     $('#talentsDatatable').DataTable({
         pagingType: 'full_numbers'
@@ -389,17 +392,17 @@
         // Add required attribute to manage reward input fields and default cursor to uploadBtn
         uploadBtnColor.style.cursor = "default";
         // Trigger popover help text on hover
-        $('.editIcon').popover({
-            content: "Click here to edit",
-            html: true,
-            placement: 'bottom'
-        });
-        $('tr[name="manageRewardsTR"]').hover(function () {
-            trVal = $(this).attr("value");
-            $('#editIcon' + trVal).popover('show');
-        }, function () {
-            $('#editIcon' + trVal).popover('hide');
-        });
+        //$('.editIcon').popover({
+        //    content: "Click here to edit",
+        //    html: true,
+        //    placement: 'bottom'
+        //});
+        //$('tr[name="manageRewardsTR"]').hover(function () {
+        //    trVal = $(this).attr("value");
+        //    $('#editIcon' + trVal).popover('show');
+        //}, function () {
+        //    $('#editIcon' + trVal).popover('hide');
+        //});
         $('#crossIcon' + x).css("pointer-events", "none");
 
         // CSS styles
