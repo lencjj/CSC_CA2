@@ -5,11 +5,59 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using CA2_Talents_Webapp.Models;
+using Microsoft.Extensions.Configuration;
+using CA2_Talents_Webapp.SQLDatabase;
 
 namespace CA2_Talents_Webapp.Controllers
 {
     public class HomeController : Controller
     {
+
+        // SQL Database configuration (need to be REMOVED)
+        private readonly IConfiguration configuration;
+        public HomeController(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+        }
+        
+        // Test INSERT
+        public IActionResult Page2()
+        {
+           // TalentDb talentDb = new TalentDb(configuration);
+
+           //  Talent talent = new Talent();
+
+           // talent.TalentId = 3;
+           // talent.TalentName = "John Ta";
+           // talent.TalentTitle = "Being John Ta";
+           // talent.TalentDesc = "NAaaa";
+           // talent.ImageURL = "Uwwwwwwwwqqqwqqqqq";
+           // //talent.CreatedDate = DateTime.Now;
+           //// talent.CreatedBy = "Jing Hui heh";
+           // //talent.UpdatedDate = DateTime.Now;
+           // talent.UpdatedBy = "Jing Hui";
+
+            // ADD
+            // string msg = talentDb.addTalent(talent);
+
+            // GET
+            // Talent talent = talentDb.getTalentById(2);
+
+            // GET ALL
+            // List<Talent> talents = talentDb.getAllTalents();
+
+            // UPDATE
+            // string msg = talentDb.editTalent(talent);
+
+            // DELETE
+            // string msg = talentDb.deleteTalent(8);
+
+
+            return View();
+        }
+
+        // -----------------------------------------------------
+
         public IActionResult Index()
         {
             return View();

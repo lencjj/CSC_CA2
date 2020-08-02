@@ -1,23 +1,117 @@
-﻿<h1>Standard User</h1>
-
+﻿@{
+    ViewData["Title"] = "Standard User Page";
+}
+@*references: https://www.w3schools.com/bootstrap/tryit.asp?filename=trybs_temp_store&stacked=h*@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/gh/recombee/js-api-client@3.0.0/dist/recombee-api-client.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<style>
+    /* Remove the navbar's default rounded borders and increase the bottom margin */
+    .navbar {
+        margin-bottom: 50px;
+        border-radius: 0;
+    }
 
-<button class="btn btn-primary" id="v1" value="item1">View Item 1</button>
-<button class="btn btn-success" id="l1" value="item1">Like Item 1</button>
-<button class="btn btn-primary" id="v2">View Item 2</button>
-<button class="btn btn-success" id="l2">Like Item 2</button>
-<input type="hidden" id="user" value="@TempData["name"]"/>
+    /* Remove the jumbotron's default bottom margin */
+    .jumbotron {
+        margin-bottom: 0;
+    }
 
-email = @TempData["name"];
+    /* Add a gray background color and some padding to the footer */
+    footer {
+        background-color: #f2f2f2;
+        padding: 25px;
+    }
+</style>
+
+
+<body>
+    <button class="btn btn-primary" id="v1" value="item1">View Item 1</button>
+    <button class="btn btn-success" id="l1" value="item1">Like Item 1</button>
+    <button class="btn btn-primary" id="v2">View Item 2</button>
+    <button class="btn btn-success" id="l2">Like Item 2</button>
+    <input type="hidden" id="user" value="@TempData["name"]" />
+
+    email = @TempData["name"];
+
+    <br />
+    <br />
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4" onclick="testNav();">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">BLACK FRIDAY DEAL</div>
+                    <div class="panel-body"><img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%" alt="Image"></div>
+                    <div class="panel-footer">Buy 50 mobiles and get a gift card</div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="panel panel-danger">
+                    <div class="panel-heading">BLACK FRIDAY DEAL</div>
+                    <div class="panel-body"><img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%" alt="Image"></div>
+                    <div class="panel-footer">Buy 50 mobiles and get a gift card</div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="panel panel-success">
+                    <div class="panel-heading">BLACK FRIDAY DEAL</div>
+                    <div class="panel-body"><img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%" alt="Image"></div>
+                    <div class="panel-footer">Buy 50 mobiles and get a gift card</div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">BLACK FRIDAY DEAL</div>
+                    <div class="panel-body"><img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%" alt="Image"></div>
+                    <div class="panel-footer">Buy 50 mobiles and get a gift card</div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">BLACK FRIDAY DEAL</div>
+                    <div class="panel-body"><img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%" alt="Image"></div>
+                    <div class="panel-footer">Buy 50 mobiles and get a gift card</div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">BLACK FRIDAY DEAL</div>
+                    <div class="panel-body"><img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%" alt="Image"></div>
+                    <div class="panel-footer">Buy 50 mobiles and get a gift card</div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">LAST BLACK FRIDAY DEAL</div>
+                    <div class="panel-body"><img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%" alt="Image"></div>
+                    <div class="panel-footer">Buy 50 mobiles and get a gift card</div>
+                </div>
+            </div>
+        </div>
+    </div><br />
+
+    <br><br>
+
+</body>
 
 
 <script>
-    var user = document.getElementById("user");
+    var user = document.getElementById("user").value;
     var itemIdBtn = document.getElementById("v1");
     var itemLikeBtn = document.getElementById("l1");
     var client = new recombee.ApiClient('csc-ca2-dev', 'qXgeETH9NFYPL2Z7H590mdV83KM1W57WzbUznD6qRVGm9vG2tIYeIJ4LJvzzEhjP');
     var recomStr;
+
+    // test
+    function testNav() {
+        //window.location.assign("/Home/StandardUser/StandardTalent/" + user);
+        window.location.assign("/Home/StandardTalent/" + user);
+        //alert(window.location.pathname);
+        //window.location.href("/HOME/StandardUser/test");
+    }
 
     itemIdBtn.onclick = function () {
         client.send(new recombee.AddDetailView(user.value, itemIdBtn.value),
@@ -42,12 +136,12 @@ email = @TempData["name"];
                 console.log(err);
                 // use fallback ...
                 return;
-            }           
+            }
             console.log(res.recomms);
             recomStr = res.recomms[0].id;
             alert("recommended id:" + recomStr);
         }
-        client.send(new recombee.RecommendItemsToUser(user.value, 1), callback);        
+        client.send(new recombee.RecommendItemsToUser(user.value, 1), callback);
     }
-    
+
 </script>
