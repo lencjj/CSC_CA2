@@ -34,6 +34,7 @@ namespace CA2_Talents_Webapp.Controllers
             return View();
         }
 
+
         public IActionResult StandardUser(string name)
         {
             if (name.Length>0)
@@ -60,6 +61,11 @@ namespace CA2_Talents_Webapp.Controllers
         }
 
         public IActionResult Register()
+        {
+            return View();
+        }
+
+        public IActionResult Discussion()
         {
             return View();
         }

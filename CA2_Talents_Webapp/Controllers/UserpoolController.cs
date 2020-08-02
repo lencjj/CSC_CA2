@@ -88,7 +88,7 @@ namespace CA2_Talents_Webapp.Controllers
                 if (userType == "Standard user")
                 {
                     await UpdateUserLastAccessed(loginCreds.Email, "Logged In");
-                    return Redirect("/Home/StandardUser/" + email);
+                    return Redirect("/Home/Main/" + email + "/" + userType);
                 }
                 else if (userType == "Premium user")
                 {
