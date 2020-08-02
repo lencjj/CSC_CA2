@@ -13,6 +13,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Amazon.DynamoDBv2;
 using System.IO;
 using DynamoDb.libs.DynamoDb;
+using CA2_Talents_Webapp.SQLDatabase;
+using Microsoft.EntityFrameworkCore;
 
 namespace CA2_Talents_Webapp
 {
@@ -31,6 +33,20 @@ namespace CA2_Talents_Webapp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Jing Hui's SQL Database - AWS RDS
+            // Ref --> https://www.syncfusion.com/blogs/post/build-crud-application-with-asp-net-core-entity-framework-visual-studio-2019.aspx#comments
+            var connection = Configuration.GetConnectionString("TalentDatabase");
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connection));
+            //services.AddControllersWithViews();
+
+
+            // Example From TMS
+            //services.AddCors();//https://docs.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-2.2
+            //services.AddDbContext<ApplicationDbContext>(
+            //    options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
+            //);
+
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
