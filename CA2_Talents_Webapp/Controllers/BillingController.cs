@@ -14,6 +14,7 @@ using Google.Cloud.BigQuery.V2;
 using System.Configuration;
 using System.Globalization;
 using DynamoDb.libs.DynamoDb;
+using System.Reflection.Metadata.Ecma335;
 
 namespace CA2_Talents_Webapp.Controllers
 {
@@ -70,9 +71,6 @@ namespace CA2_Talents_Webapp.Controllers
         {
             try
             {
-                string relativePath = @"../../CSC_CA2/CA2_Talents_Webapp/GoogleBigQuery.json";
-                string credential_path = System.IO.Path.GetFullPath(relativePath);
-                Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
                 StripeConfiguration.ApiKey = "sk_test_51GxEfiHhYK7K9XttqUpv12yjajZLs01TY95VhvzVfPEb5Ed8GaF3GFUV2iuhFZGkBgHoNib4iHBDlpALqWPplth6008EdMnnaw";
                 int planNo = chargeDto.Plan;
                 string planName = "";
@@ -122,9 +120,6 @@ namespace CA2_Talents_Webapp.Controllers
                 var service = new SubscriptionService();
                 Subscription subscription = service.Create(options);
 
-                // Google Big Query
-                InsertBQData(chargeDto.Email, planNo);
-
                 // DynamoDb 
                 AddUser(chargeDto.Email, planName, dateTimeNow.ToString(), chargeDto.CardName, chargeDto.Password, chargeDto.Phone, "Registered");
 
@@ -168,16 +163,20 @@ namespace CA2_Talents_Webapp.Controllers
 
         }
 
-        private static void InsertBQData(string email, int plan)
+        [HttpPost]
+        public IActionResult InsertBQData(string username, string userplan)
         {
             try
             {
+                string relativePath = @"../../CSC_CA2/CA2_Talents_Webapp/GoogleBigQuery.json";
+                string credential_path = System.IO.Path.GetFullPath(relativePath);
+                Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
+
                 string projectId = "turnkey-guild-265901";
                 DateTime now = DateTime.Now;
-                string planName = "";
                 Console.Clear();
-                Console.WriteLine("email: " + email);
-                Console.WriteLine("plan: " + plan);
+                Console.WriteLine("email: " + username);
+                Console.WriteLine("plan: " + userplan);
 
                 BigQueryClient client = BigQueryClient.Create(projectId);
 
@@ -192,27 +191,20 @@ namespace CA2_Talents_Webapp.Controllers
                     { "planType", BigQueryDbType.String } //BigQueryDbType.Int64
                 }.Build());
 
-                if (plan == 1)
-                {
-                    planName = "Standard user";
-                }
-                else
-                {
-                    planName = "Premium user";
-                }
-
                 //Insert data into table
                 table.InsertRow(new BigQueryInsertRow
                 {
-                    { "email", email },
+                    { "email", username },
                     { "subscriptionStarted", DateTimeOffset.UtcNow.ToUnixTimeSeconds() },
-                    { "planType", planName }
+                    { "planType", userplan }
                 });
-                Console.WriteLine("Inserted: " + email + " successfully");
+                Console.WriteLine("Inserted: " + username + " successfully");
+                return Redirect("/Home/Main/"+ username + "/" + userplan + "?Msg=Success");
             }// End of try
             catch (Exception ex)
             {
                 Console.WriteLine("Error: " + ex);
+                return Redirect("/Home/Main/" + username + "/" + userplan + "?Msg=Error");
             }
         }// End of insertBQData
 

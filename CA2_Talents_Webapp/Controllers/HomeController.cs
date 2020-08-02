@@ -44,8 +44,18 @@ namespace CA2_Talents_Webapp.Controllers
             return View();
         }
 
-        public IActionResult PremiumUser()
+        public IActionResult Main(string name, string plan)
         {
+            if (name.Length > 0 && plan.Length > 0) {
+                TempData["name"] = name;
+                TempData["plan"] = plan;
+            }
+            else
+            {
+                TempData["name"] = "no name";
+                TempData["plan"] = "no plan";
+            }              
+            TempData.Keep();
             return View();
         }
 
