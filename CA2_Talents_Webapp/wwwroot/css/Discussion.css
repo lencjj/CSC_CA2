@@ -1,0 +1,59 @@
+﻿body {
+}
+
+.pageHeader {
+    margin: 0 auto 5rem auto;
+    padding: 0;
+    text-align: center;
+    letter-spacing: 15px;
+    font-family: 'Myriad Pro';
+}
+
+#talentInfoContainer {
+    margin-bottom: 5rem;
+}
+
+    #talentInfoContainer h3 {
+        font-weight: bold;
+        margin-left: 5rem;
+    }
+
+.imageContainer {
+    width: 450px;
+    height: 300px;
+    border: 3px solid black;
+    margin-top: 5rem;
+    margin-bottom: 5rem;
+    margin-left: 5rem;
+}
+
+#talentInfoContainer .card-title {
+    font-weight: bold;
+    text-decoration: underline;
+    margin-left: 5rem;
+}
+
+#talentInfoContainer .card-text {
+    margin-left: 5rem;
+}
+
+/*#showCommentsBtn {
+    float: right;
+    color: white;
+}
+
+#commentsSection h4 {
+    font-weight: bold;
+}
+
+#commentsSection .card-footer {
+    display: flex;
+}
+
+#commentInput {
+    width: 100%;
+    margin-right: 2rem;
+}
+
+#commentBtn {
+}*/

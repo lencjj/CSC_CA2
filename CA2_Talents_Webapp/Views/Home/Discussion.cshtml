@@ -1,0 +1,56 @@
+﻿@{
+    ViewData["Title"] = "Discussion";
+}
+
+<link rel="stylesheet" href="~/css/Discussion.css">
+<h2 class="pageHeader"> WELCOME TO THE TALENT'S PROFILE</h2>
+<div class="card" id="talentInfoContainer">
+    <div class="card-header">
+        <h3>Title</h3>
+    </div>
+    <div class="card-body">
+        <div class="imageContainer">
+            <img />
+        </div>
+        <h4 class="card-title">Talent Name</h4>
+        <p class="card-text">Description.</p>
+    </div>
+    <div class="card-footer">
+        @*<a class="btn btn-primary" id="showCommentsBtn">Show Comments</a>*@
+    </div>
+</div>
+
+@*<div class="card" id="commentsSection" style="display: none;">
+    <div class="card-header">
+        <h4>Comments</h4>
+    </div>
+    <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Cras justo odio</li>
+            <li class="list-group-item">Dapibus ac facilisis in</li>
+            <li class="list-group-item">Vestibulum at eros</li>
+        </ul>
+    </div>
+    <div class="card-footer">
+        <input type="text" name="commentInput" id="commentInput" class="commentInput" />
+        <button class="btn btn-primary" id="commentBtn">Comment</button>
+    </div>
+</div>*@
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<script>
+    //var showCommentsBtn = document.getElementById('showCommentsBtn');
+    //showCommentsBtn.addEventListener('click', function () {
+    //    var commentsSection = document.getElementById('commentsSection');
+    //    if (commentsSection.style.display == 'none') {
+    //        commentsSection.style.display = 'block';
+    //        showCommentsBtn.innerHTML = "Hide Comments";
+    //    } else {
+    //        commentsSection.style.display = 'none';
+    //        showCommentsBtn.innerHTML = "Show Comments";
+    //    }
+    //})
+</script>
+

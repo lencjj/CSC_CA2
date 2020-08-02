@@ -86,6 +86,11 @@ namespace CA2_Talents_Webapp
                     );
 
                 routes.MapRoute(
+                    name: "premium",
+                    template: "{controller=Home}/{action=Main}/{name}/{plan}"
+                    );
+
+                routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");               
             });
