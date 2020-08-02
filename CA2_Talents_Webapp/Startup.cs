@@ -104,6 +104,7 @@ namespace CA2_Talents_Webapp
                     name: "Standard Main Page",
                     template: "{controller=Home}/{action=StandardUser}/{name}"
                     );
+
                 routes.MapRoute(
                     name: "Standard Talent Page",
                     template: "{controller=Home}/{action=StandardTalent}/{name}"

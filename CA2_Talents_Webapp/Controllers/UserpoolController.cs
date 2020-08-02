@@ -41,6 +41,7 @@ namespace CA2_Talents_Webapp.Controllers
             var response = await _updateUser.UpdateUserLastAccessed(email, lastaccessed);
             return Ok(response);
         }
+
         [HttpPost]
         public async Task<IActionResult> SignInUser(LoginCreds loginCreds)
         {
