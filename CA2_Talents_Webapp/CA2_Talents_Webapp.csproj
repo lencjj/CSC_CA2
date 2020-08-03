@@ -31,8 +31,4 @@
     <ProjectReference Include="..\DynamoDb.libs\DynamoDb.libs.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Images\" />
-  </ItemGroup>
-
 </Project>
