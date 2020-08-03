@@ -24,7 +24,32 @@ namespace CA2_Talents_Webapp.Controllers
             _env = env;
         }
 
-        // --- All the talent methods ---
+        [HttpGet] 
+        public JsonResult GetAllTalents()
+        {
+            TalentDb talentDb = new TalentDb(configuration);
+            List<Talent> talents = new List<Talent>();
+            talents = talentDb.getAllTalents();
+            List<object> recordList = new List<object>();
+            foreach (var talent in talents)
+            {
+                recordList.Add(new
+                {
+                    talentId = talent.TalentId,
+                    TalentName = talent.TalentName,
+                    TalentTitle = talent.TalentTitle,
+                    TalentDesc = talent.TalentDesc,
+                    ImageURL = talent.ImageURL,
+                    CreatedDate = talent.CreatedDate,
+                    CreatedBy = talent.CreatedBy,
+                    UpatedDate = talent.UpdatedDate,
+                    UpdatedBy = talent.UpdatedBy
+                });
+            }
+
+            return new JsonResult(recordList);
+        }
+
         [HttpPost]
         public string CreateTalent(Talent talent, IFormFile talentImgFile)
         {
@@ -60,12 +85,12 @@ namespace CA2_Talents_Webapp.Controllers
                 System.IO.File.Delete(path);
                 return "NSFW";
             }
-            if (response.Medical.ToString().Equals("L") || response.Medical.ToString().Equals("VeryLikely"))
+            if (response.Medical.ToString().Equals("Likely") || response.Medical.ToString().Equals("VeryLikely"))
             {
                 System.IO.File.Delete(path);
                 return "NSFW";
             }
-            if (response.Spoof.ToString().Equals("LIKELY") || response.Spoof.ToString().Equals("VERY LIKELY"))
+            if (response.Spoof.ToString().Equals("Likely") || response.Spoof.ToString().Equals("VeryLikely"))
             {
                 System.IO.File.Delete(path);
                 return "NSFW";
@@ -76,6 +101,9 @@ namespace CA2_Talents_Webapp.Controllers
             talentDb.addTalent(talent);
             return "Successfully added";
         }
+
+
+
 
 
     }
