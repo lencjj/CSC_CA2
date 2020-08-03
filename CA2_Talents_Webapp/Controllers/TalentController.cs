@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CA2_Talents_Webapp.Models;
+using CA2_Talents_Webapp.Services;
 using CA2_Talents_Webapp.SQLDatabase;
 using Google.Cloud.Vision.V1;
 using Microsoft.AspNetCore.Hosting;
@@ -13,15 +14,19 @@ using Microsoft.Extensions.Configuration;
 
 namespace CA2_Talents_Webapp.Controllers
 {
+    [Produces("application/json")]
     public class TalentController : ControllerBase
     {
         // SQL Database configuration
         private readonly IConfiguration configuration;
         private IHostingEnvironment _env;
-        public TalentController(IConfiguration configuration, IHostingEnvironment env)
+        private readonly IS3Service _service;
+
+        public TalentController(IConfiguration configuration, IHostingEnvironment env, IS3Service service)
         {
             this.configuration = configuration;
             _env = env;
+            _service = service;
         }
 
         [HttpGet] 
@@ -51,7 +56,7 @@ namespace CA2_Talents_Webapp.Controllers
         }
 
         [HttpPost]
-        public string CreateTalent(Talent talent, IFormFile talentImgFile)
+        public async Task<string> CreateTalent (Talent talent, IFormFile talentImgFile)
         {
             //Save to images
             Console.WriteLine(_env.ContentRootPath);
@@ -62,6 +67,11 @@ namespace CA2_Talents_Webapp.Controllers
             {
                 talentImgFile.CopyTo(fileStream);
             }
+
+            //Authenticate to the service by using Service Account
+            string relativePath = @"../../CSC_CA2/CA2_Talents_Webapp/GoogleVisionAI.json";
+            string credential_path = System.IO.Path.GetFullPath(relativePath);
+            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
 
             // Instantiates a client
             var client = ImageAnnotatorClient.Create();
@@ -95,10 +105,12 @@ namespace CA2_Talents_Webapp.Controllers
                 System.IO.File.Delete(path);
                 return "NSFW";
             }
+            Console.WriteLine(response.Medical.ToString());
 
             TalentDb talentDb = new TalentDb(configuration);
             talent.ImageURL = talentImgFile.FileName;
             talentDb.addTalent(talent);
+            await _service.UploadFileAsync(path);
             return "Successfully added";
         }
 

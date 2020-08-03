@@ -15,6 +15,8 @@ using System.IO;
 using DynamoDb.libs.DynamoDb;
 using CA2_Talents_Webapp.SQLDatabase;
 using Microsoft.EntityFrameworkCore;
+using CA2_Talents_Webapp.Services;
+using Amazon.S3;
 
 namespace CA2_Talents_Webapp
 {
@@ -71,6 +73,10 @@ namespace CA2_Talents_Webapp
             services.AddSingleton<IAddUser, AddUser>();
             services.AddSingleton<IGetUser, GetUser>();
             services.AddSingleton<IUpdateUser, UpdateUser>();
+
+            //Amazon S3
+            services.AddSingleton<IS3Service, S3Service>();
+            services.AddAWSService<IAmazonS3>();
 
         }
 
