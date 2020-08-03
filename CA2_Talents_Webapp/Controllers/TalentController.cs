@@ -47,7 +47,7 @@ namespace CA2_Talents_Webapp.Controllers
                     imageURL = talent.ImageURL,
                     createdDate = talent.CreatedDate,
                     createdBy = talent.CreatedBy,
-                    upatedDate = talent.UpdatedDate,
+                    updatedDate = talent.UpdatedDate,
                     updatedBy = talent.UpdatedBy
                 });
             }

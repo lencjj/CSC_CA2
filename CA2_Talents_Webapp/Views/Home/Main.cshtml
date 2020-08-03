@@ -68,16 +68,16 @@
         font-weight: bold;
     }
 
-    .close:hover,
-    .close:focus {
-        color: red;
-        text-decoration: none;
-        cursor: pointer;
-    }
+        .close:hover,
+        .close:focus {
+            color: red;
+            text-decoration: none;
+            cursor: pointer;
+        }
 
-    .close span {
-        font-size: 3.5rem;
-    }
+        .close span {
+            font-size: 3.5rem;
+        }
 
     #createTalentBtn {
         background-color: cornflowerblue;
@@ -126,6 +126,7 @@
     #createTalentDiv {
         margin: 0 auto 2rem;
     }
+
     #loader {
         position: absolute;
         top: 50%;
@@ -182,6 +183,8 @@
         }
     }
 </style>
+
+
 
 <div class="body">
 
@@ -441,37 +444,56 @@
                                     </div></td>`);
                 $rowElement.append($cellElement);
 
-        $cellElement = $(`<td style="vertical-align: top;"><div id="rewardContentIconsColumn">
-                                <div class="flex-column" id="manageRewardIcons">
-                                    <div class="rewardsIconRow">
-                                        <button id="cancelBtn${i}" onclick="cancelEdit(${i})" style="display:none">Cancel</button>
-                                        <span aria-hidden="true" id="editIcon${i}" value="${i}" class="editIcon"><i id="iEdit${i}" class="far fa-edit"></i></span>
-                                        <span id="crossIcon${i}" aria-hidden="true" data-toggle="modal" data-target="#deleteRewardModal"
-                                              onClick="insertDeleteVals()"
-                                              ><i class="fas fa-times"></i></span>
-                                        <p id="hiddenID${i}" hidden="true"><%=rewards.get(i).getRewardID()%></p>
-                                    </div>
-                                    <input class="btn btn-primary commentBtnClass" onclick="goToDiscussion()" type="button" id="commentBtn" value="Comment">
-                                </div>
-                            </div></td>`);
+                $cellElement = $(`<td style="vertical-align: top;"><div id="talentContentIconsColumn">
+                                        <div class="flex-column" id="manageTalentIcons">
+                                            <div class="talentIconRow">
+                                                <button id="cancelBtn${i}" onclick="cancelEdit(${i})" style="display:none">Cancel</button>
+                                                <span aria-hidden="true" id="editIcon${i}" value="${i}" class="editIcon" onclick="toggleEditMode(${i})"><i id="iEdit${i}" class="far fa-edit"></i></span>
+                                                <span id="crossIcon${i}" aria-hidden="true" data-toggle="modal" data-target="#deleteTalentModal"
+                                                      onClick="insertDeleteVals(` + talent.talentId + `, '` + talent.talentName + `', '` + talent.talentTitle + `')"
+                                                      ><i class="fas fa-times"></i></span>
+                                            </div>
+                                            <button class="btn btn-primary commentBtnClass" type="button" id="commentBtn" value="` + talent.talentName + `"
+                                            onclick="storeSession(` + talent.talentId + `, '` + talent.talentName + `', '` + talent.talentTitle + `', '` + talent.talentDesc + `', '` + talent.imageURL + `', '` + talent.createdDate + `')">
+                                            Comment
+                                            </button>
+                                        </div>
+                                    </div></td>`);
 
                 $rowElement.append($cellElement);
                 $('#talentsTableBody').append($rowElement);//inserting a new row
                 //End-- Defining the row element to hold lesson type information
             }//End of for loop
             setDefaultStyle(data.length);
+
+            // Recombee
+            $('.commentBtnClass').click(function () {
+                var talentName = $(this).attr("value");
+
+                client.send(new recombee.AddDetailView(user, talentName),
+                    (err, response) => {
+                        //...
+                    }
+                );
+
+                // session
+                sessionStorage.setItem("talentName", talentName);
+
+                goToDiscussion(talentName);
+            });
         });
     }
 
-    $('.commentBtnClass').click(function () {
-        var talentName = $(this).attr("value");
-        client.send(new recombee.AddDetailView(user, talentName),
-            (err, response) => {
-                //...
-            }
-        );
-        goToDiscussion(talentName);
-    });
+    function storeSession(talentId, talentName, talentTitle, talentDesc, imageURL, createdDate) {
+        //alert(talentId + "," + talentName + "," + talentTitle + "," + talentDesc + "," + imageURL + "," + createdDate);
+        sessionStorage.setItem('talentId', talentId);
+        sessionStorage.setItem('talentName', talentName);
+        sessionStorage.setItem('talentTitle', talentTitle);
+        sessionStorage.setItem('talentDesc', talentDesc);
+        sessionStorage.setItem('imageURL', imageURL);
+        sessionStorage.setItem('createdDate', createdDate);
+
+    }
 
     //for loop for dynamic element IDs
     function setDefaultStyle(noOfTalents) {
@@ -484,21 +506,21 @@
             talentDesc = document.getElementById("talentDesc" + x);
             talentName = document.getElementById("talentName" + x);
 
-        // Add required attribute to manage reward input fields and default cursor to uploadBtn
-        uploadBtnColor.style.cursor = "default";
-        // Trigger popover help text on hover
-        $('.editIcon').popover({
-            content: "Click here to edit",
-            html: true,
-            placement: 'bottom'
-        });
-        $('tr[name="manageRewardsTR"]').hover(function () {
-            trVal = $(this).attr("value");
-            $('#editIcon' + trVal).popover('show');
-        }, function () {
-            $('#editIcon' + trVal).popover('hide');
-        });
-        $('#crossIcon' + x).css("pointer-events", "none");
+            // Add required attribute to manage reward input fields and default cursor to uploadBtn
+            uploadBtnColor.style.cursor = "default";
+            // Trigger popover help text on hover
+            $('.editIcon').popover({
+                content: "Click here to edit",
+                html: true,
+                placement: 'bottom'
+            });
+            $('tr[name="managetalentTR"]').hover(function () {
+                trVal = $(this).attr("value");
+                $('#editIcon' + trVal).popover('show');
+            }, function () {
+                $('#editIcon' + trVal).popover('hide');
+            });
+            $('#crossIcon' + x).css("pointer-events", "none");
 
             // CSS styles
             uploadBtn.style.width = "0px";
@@ -615,7 +637,7 @@
         }
     }
 
-    //Logic for image preview in create rewards modal
+    //Logic for image preview in create talent modal
     $(function () {
         $(document).on("change", ".createTalentUploadFile", function () {
             var uploadFile = $(this);
@@ -635,7 +657,7 @@
 
         });
     });
-    //Logic for image preview in manage rewards
+    //Logic for image preview in manage talent
     $(function () {
         $(document).on("change", ".uploadFile", function () {
             var uploadFile = $(this);

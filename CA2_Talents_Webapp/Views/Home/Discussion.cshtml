@@ -6,14 +6,14 @@
 <h2 class="pageHeader"> WELCOME TO THE TALENT'S PROFILE</h2>
 <div class="card" id="talentInfoContainer">
     <div class="card-header">
-        <h3>Title</h3>
+        <h3 id="singleTalentTitle">Title</h3>
     </div>
     <div class="card-body">
         <div class="imageContainer">
-            <img />
+            <img id="singleTalentImageURL"/>
         </div>
-        <h4 class="card-title">Talent Name</h4>
-        <p class="card-text">Description.</p>
+        <h4 class="card-title" id="singleTalentName">Talent Name</h4>
+        <p class="card-text" id="singleTalentDesc">Description.</p>
     </div>
     <div class="card-footer">
         @*<a class="btn btn-primary" id="showCommentsBtn">Show Comments</a>*@
@@ -49,19 +49,38 @@
 
 <script>
 
-    var talentName, likeBtn, client, user;
+    var talentName, likeBtn, client, user, talentId, talentTitle, talentDesc, imageURL, createdDate;
     var recomStr = "";
     var recommendationStr = document.getElementById("recommendations");
     client = new recombee.ApiClient('csc-ca2-dev', 'qXgeETH9NFYPL2Z7H590mdV83KM1W57WzbUznD6qRVGm9vG2tIYeIJ4LJvzzEhjP');
     likeBtn = document.getElementById("likeBtn");
+    
 
     $(document).ready(function () {
         talentName = getUrlParameter("TalentName");
         likeBtn.value = talentName;
         user = getUrlParameter("User");
         likeBtn.style.animation = "pulse-animation 1.8s infinite";
-        
+
+        talentId = sessionStorage.getItem('talentId');
+        talentName = sessionStorage.getItem('talentName');
+        talentTitle = sessionStorage.getItem('talentTitle');
+        talentDesc = sessionStorage.getItem('talentDesc');
+        imageURL = sessionStorage.getItem('imageURL');
+        createdDate = sessionStorage.getItem('createdDate');    
+
+        var singleTalentTitle = document.getElementById('singleTalentTitle');
+        var singleTalentName = document.getElementById('singleTalentName');
+        var singleTalentDesc = document.getElementById('singleTalentDesc');
+
+        singleTalentTitle.innerHTML = talentTitle;
+        singleTalentName.innerHTML = talentName;
+        document.getElementById("singleTalentImageURL").src = "https://storetalentimages.s3-ap-southeast-1.amazonaws.com/" + imageURL;
+        singleTalentDesc.innerHTML = talentDesc;
+
+        //alert(imageURL);
     });
+
 
     $('#likeBtn').click(function () {
         client.send(new recombee.AddPurchase(user, likeBtn.value),
@@ -129,8 +148,13 @@
         margin-left: 2rem;
         color: royalblue;
     }
+    #singleTalentImageURL {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
 
-    #inlineDiv p, #inlineDiv button{
+    #inlineDiv p, #inlineDiv button {
         display: inline;
     }
 
