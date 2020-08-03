@@ -817,10 +817,10 @@
         if (url.includes("Premium")) {
             // Do nothing
         }
-        else if (url.includes("Standard")) {
+        else if (url.includes("Standard")) { // here
             //$('.commentBtnClass').hide();
-            //var commentBtnClass = document.getElementsByClassName("commentBtnClass");
-            //commentBtnClass.style.visibility = "hidden";
+            var commentBtnClass = document.getElementsByClassName("commentBtnClass");
+            commentBtnClass.style.display = "none";
         }
         else {
 
@@ -842,9 +842,9 @@
             }
         }
     }
-
+    var userplan = $("#plan").val();
     function goToDiscussion(talentName) {
-        window.location.href = "/Home/Discussion?User=" + user + "&TalentName=" + talentName;
+        window.location.href = "/Home/Discussion?User=" + user + "&TalentName=" + talentName + "&UserType=" + userplan;
     }
 
     function createTalent() {
