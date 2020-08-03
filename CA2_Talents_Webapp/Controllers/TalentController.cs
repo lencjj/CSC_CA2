@@ -29,7 +29,7 @@ namespace CA2_Talents_Webapp.Controllers
             _service = service;
         }
 
-        [HttpGet] 
+        [HttpGet]
         public JsonResult GetAllTalents()
         {
             TalentDb talentDb = new TalentDb(configuration);
@@ -56,17 +56,28 @@ namespace CA2_Talents_Webapp.Controllers
         }
 
         [HttpPost]
-        public async Task<string> CreateTalent (Talent talent, IFormFile talentImgFile)
+        public async Task<string> CreateTalent(Talent talent, IFormFile talentImgFile)
         {
+            string imageName = "";
             //Save to images
-            Console.WriteLine(_env.ContentRootPath);
-            var dir = _env.ContentRootPath + "/Images";
-            Console.WriteLine(dir);
-            string path = Path.Combine(dir, talentImgFile.FileName);
-            using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write))
+            if (talentImgFile == null)
             {
-                talentImgFile.CopyTo(fileStream);
+                //Do nothing
             }
+            else
+            {
+                imageName = talentImgFile.FileName;
+                var dir = _env.ContentRootPath + "/Images";
+                string path = Path.Combine(dir, talentImgFile.FileName);
+                using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write))
+                {
+                    talentImgFile.CopyTo(fileStream);
+                }
+
+            //Authenticate to the service by using Service Account
+            string relativePath = @"../../CSC_CA2/CA2_Talents_Webapp/GoogleVisionAI.json";
+            string credential_path = System.IO.Path.GetFullPath(relativePath);
+            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
 
             // Instantiates a client
             var client = ImageAnnotatorClient.Create();
@@ -100,22 +111,92 @@ namespace CA2_Talents_Webapp.Controllers
                 return "NSFW";
             }
 
-            TalentDb talentDb = new TalentDb(configuration);
-            talent.ImageURL = talentImgFile.FileName;
-            talentDb.addTalent(talent);
-            await _service.UploadFileAsync(path);
-            System.IO.File.Delete(path);
+                await _service.UploadFileAsync(path);
+                System.IO.File.Delete(path);
 
+            }
+
+
+
+            TalentDb talentDb = new TalentDb(configuration);
+            talent.ImageURL = imageName;
+            talentDb.addTalent(talent);
             return "Successfully added";
         }
 
+
+        public async Task<string> UpdateTalent(Talent talent, IFormFile talentImgFile)
+        {
+            string imageName = talent.ImageURL;
+            //Save to images
+            if (talentImgFile == null)
+            {
+                //Do nothing
+            }
+            else
+            {
+                imageName = talentImgFile.FileName;
+                var dir = _env.ContentRootPath + "/Images";
+                string path = Path.Combine(dir, talentImgFile.FileName);
+                using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write))
+                {
+                    talentImgFile.CopyTo(fileStream);
+                }
+
+                //Authenticate to the service by using Service Account
+                string relativePath = @"../../CSC_CA2/CA2_Talents_Webapp/GoogleVisionAI.json";
+                string credential_path = System.IO.Path.GetFullPath(relativePath);
+                Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
+                // Instantiates a client
+                var client = ImageAnnotatorClient.Create();
+                // Load the image file into memory
+                var image = Image.FromFile(path);
+                // Check for NSFW images
+                var response = client.DetectSafeSearch(image);
+                if (response.Adult.ToString().Equals("Likely") || response.Adult.ToString().Equals("VeryLikely"))
+                {
+                    System.IO.File.Delete(path);
+                    return "NSFW";
+                }
+                if (response.Racy.ToString().Equals("Likely") || response.Racy.ToString().Equals("VeryLikely"))
+                {
+                    System.IO.File.Delete(path);
+                    return "NSFW";
+                }
+                if (response.Violence.ToString().Equals("Likely") || response.Violence.ToString().Equals("VeryLikely"))
+                {
+                    System.IO.File.Delete(path);
+                    return "NSFW";
+                }
+                if (response.Medical.ToString().Equals("Likely") || response.Medical.ToString().Equals("VeryLikely"))
+                {
+                    System.IO.File.Delete(path);
+                    return "NSFW";
+                }
+                if (response.Spoof.ToString().Equals("Likely") || response.Spoof.ToString().Equals("VeryLikely"))
+                {
+                    System.IO.File.Delete(path);
+                    return "NSFW";
+                }
+
+                await _service.UploadFileAsync(path);
+                System.IO.File.Delete(path);
+
+            }
+            TalentDb talentDb = new TalentDb(configuration);
+            talent.ImageURL = imageName;
+            talentDb.editTalent(talent);
+            return "Successfully updated";
+        }
+        
         [HttpDelete]
         public string DeleteTalent(int talentId)
         {
             try
             {
                 TalentDb talentDb = new TalentDb(configuration);
-                string msg = talentDb.deleteTalent(talentId);
+                talentDb.deleteTalent(talentId);
+                string msg = "deleteSuccess";
 
                 Console.WriteLine("--------------Success delete!!-----------");
                 return msg;
@@ -127,8 +208,5 @@ namespace CA2_Talents_Webapp.Controllers
                 return "error";
             }
         }
-
-
-
     }
 }

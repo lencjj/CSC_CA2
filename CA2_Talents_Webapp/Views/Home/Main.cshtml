@@ -293,7 +293,7 @@
     </table>
 </div>
 
-<!-- Create Talnts Modal -->
+<!-- Create Talents Modal -->
 <div class="modal fade bd-example-modal-lg" id="createTalentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-right" role="document">
         <div class="modal-content">
@@ -359,10 +359,17 @@
 <script>
     $(document).ready(function () {
         var url = window.location.href;
-        var msgVal = url.split('?')[1].split('=');
-        msgVal.shift();
-        if (msgVal == "success") {
-            displaySuccessNoti("Talent successfully created.")
+        if (url.indexOf("?") > -1) {
+            //Contains param
+            var msgVal = url.split('?')[1].split('=');
+            msgVal.shift();
+            if (msgVal == "createSuccess") {
+                displaySuccessNoti("Talent successfully created.");
+            } else if (msgVal == "updateSuccess") {
+                displaySuccessNoti("Talent successfully updated.");
+            } else if (msgVal == "deleteSuccess") {
+                displaySuccessNoti("Talent successfully deleted.");
+            }
         }
     })
     //var rewardListLength = document.getElementById("rewardListLength").value;
@@ -412,36 +419,38 @@
                 //$cellElement = $(`<td>${record.rowNumber}</td>`);
                 //Add dynamic ids later
                 $cellElement = $(`<td>
-                                    <div class="imgUp">
-                                        <div class="imagePreview"><img class="talentImage" src="https://storetalentimages.s3-ap-southeast-1.amazonaws.com/` + talent.imageURL + `"></div>
-                                        <label class="btn btn-primary" id="talentImgBtn${i}">
-                                            Upload<input type="file" class="uploadFile img" id="uploadImgBtn${i}" value="Upload Photo" accept="image" disabled>
-                                        </label>
-                                    </div><!-- col-2 -->
-                                </td>`);
+                            <div class="imgUp">
+                                <div class="imagePreview" id="imagePreview${i}"><img class="talentImage" id="talentImage${i}" src="https://storetalentimages.s3-ap-southeast-1.amazonaws.com/` + talent.imageURL + `"></div>
+                                <label class="btn btn-primary" id="talentImgBtn${i}">
+                                    Upload<input type="file" class="uploadFile img" id="uploadImgBtn${i}" value="Upload Photo" accept="image" disabled>
+                                </label>
+                            </div><!-- col-2 -->
+                        </td>`);
                 $rowElement.append($cellElement);
                 $cellElement = $(`<td><div id="talentContentColumn">
-                                        <div class="talentColumn">
-                                            <div class="row">
-                                                <p class="col-md-6 talentLabel">Title: </p>
-                                                <p id="talentTitle${i}" class ="talentContent" onkeypress="return (this.innerText.length <= 16)">
-                                                    ` + talent.talentTitle + `
-                                                </p>
-                                            </div>
-                                            <div class="row">
-                                                <p class="col-md-6 talentLabel">Name: </p>
-                                                <p id="talentName${i}" class ="talentContent" onkeypress="return (this.innerText.length <= 100)">
-                                                    ` + talent.talentName + `
-                                                </p>
-                                            </div>
-                                            <div class="row">
-                                                <p class="col-md-6 talentLabel">Description:</p>
-                                                <p id="talentDesc${i}" class ="talentContent" onkeypress="return (this.innerText.length <= 100)">
-                                                    ` + talent.talentDesc + `
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div></td>`);
+                                <div class="talentColumn">
+                                    <div class="row">
+                                        <p class="col-md-6 talentLabel">Title: </p>
+                                        <p id="talentTitle${i}" class ="talentContent" onkeypress="return (this.innerText.length <= 16)">
+                                            ` + talent.talentTitle + `
+                                        </p>
+                                    </div>
+                                    <div class="row">
+                                        <p class="col-md-6 talentLabel">Name: </p>
+                                        <p id="talentName${i}" class ="talentContent" onkeypress="return (this.innerText.length <= 100)">
+                                            ` + talent.talentName + `
+                                        </p>
+                                    </div>
+                                    <div class="row">
+                                        <p class="col-md-6 talentLabel">Description:</p>
+                                        <p id="talentDesc${i}" class ="talentContent" onkeypress="return (this.innerText.length <= 100)">
+                                            ` + talent.talentDesc + `
+                                        </p>
+                                    </div>
+                                    <input type="hidden" id="talentId${i}" class="talentContent" value=` + talent.talentId + `>
+                                    <input type="hidden" id="imageUrl${i}" class="talentContent" value=` + talent.imageURL +  `>
+                                </div>
+                            </div></td>`);
                 $rowElement.append($cellElement);
 
                 $cellElement = $(`<td style="vertical-align: top;"><div id="talentContentIconsColumn">
@@ -552,6 +561,7 @@
     // End of document css and validation on load
 
     function deleteTalent() {
+        event.preventDefault();
         editMode = false;
         let talentId = $('#deleteTalentID').val();
 
@@ -559,9 +569,17 @@
             url: '/Talent/DeleteTalent?talentId=' + talentId,
             method: 'DELETE'
         }).done(function (data) {
-            getAllTalents();
+            if (data == "deleteSuccess") {
+                var url = location.href;
+                if (url.indexOf("?") > -1) {
+                    var baseUrl = url.split('?')[0].split('=');
+                    window.location.href = baseUrl + "?msg=deleteSuccess"
+                } else {
+                    window.location.href = location.href + "?msg=deleteSuccess";
+                }
+            }
         }).fail(function () {
-            alert("Ajax failed!..");
+            displayFailNoti("Failed to delete");
         })
 
     }
@@ -672,6 +690,8 @@
                 reader.onloadend = function () { // set image data as background of div
                     //alert(uploadFile.closest(".upimage").find('.imagePreview').length);
                     uploadFile.closest(".imgUp").find('.imagePreview').css("background-image", "url(" + this.result + ")");
+                    uploadFile.closest(".imgUp").find('.talentImage').css("display", "none");
+
                 };
             }
         });
@@ -690,6 +710,8 @@
         document.getElementById('talentTitle' + editIconID).innerHTML = title;
         document.getElementById('talentDesc' + editIconID).innerHTML = description;
         document.getElementById('talentName' + editIconID).innerHTML = name;
+        document.getElementById('talentImage' + editIconID).style.display = "block";
+        $('#imagePreview' + editIconID).val(null);
 
         msg = "Editing mode disabled";
         displayFailNoti(msg);
@@ -736,35 +758,50 @@
         $('#cancelBtn' + editIconID).hide();
     }
 
-    //function updateTalent(i) {
-    //    var rewardID = $.trim($('#hiddenID' + i).text());
-    //    var title = $.trim($('#talentTitle' + i).text());
-    //    var description = $.trim($('#talentDesc' + i).text());
-    //    var name = $.trim($('#talentName' + i).text());
+    function updateTalent(i) {
+        event.preventDefault();
+        var talentId = $.trim($('#talentId' + i).val());
+        var title = $.trim($('#talentTitle' + i).text());
+        var description = $.trim($('#talentDesc' + i).text());
+        var name = $.trim($('#talentName' + i).text());
+        var fileInput = document.getElementById("uploadImgBtn" + i);
+        var file = fileInput.files[0];
+        var formData = new FormData();
+        formData.append('talentImgFile', file);
+        formData.append('TalentTitle', title);
+        formData.append('TalentName', name);
+        formData.append('TalentDesc', description);
+        formData.append('TalentId', talentId);
+        formData.append('CreatedBy', $('#createdByName').val());
+        formData.append('UpdatedBy', $('#createdByName').val());
+        formData.append('ImageURL', $('#imageUrl' + i).val());
 
-    //    $.ajax({
-    //        url: '../GIE_EditRewardServlet',
-    //        type: 'post',
-    //        data: {
-    //            rewardID: rewardID,
-    //            name: name,
-    //            description: description,
-    //            title: title,
-    //        },
-    //        success: function (result) {
-    //            if (result === "Reward updated successfully") {
-    //                window.location.href = "../GIE_AllRewardsServlet?Msg=" + result;
-    //            } else {
-    //                var msg = "Reward update failed";
-    //                window.location.href = "../GIE_AllRewardsServlet?Msg=" + msg;
-    //            }
-    //        },
-    //        error: function () {
-    //            var msg = "Reward update failed";
-    //            window.location.href = "../GIE_AllRewardsServlet?Msg=" + msg;
-    //        }
-    //    });
-    //}
+        $.ajax({
+            url: '/Talent/UpdateTalent',
+            method: 'POST',
+            processData: false,
+            contentType: false,
+            async: false,
+            data: formData,
+            success: function (data) {
+                if (data == "NSFW") {
+                    displayFailNoti("Update of talent failed. Sensitive image detected");
+                } else {
+                    var url = location.href;
+                    if (url.indexOf("?") > -1) {
+                        var baseUrl = url.split('?')[0].split('=');
+                        window.location.href = baseUrl + "?msg=updateSuccess"
+                    } else {
+                        window.location.href = location.href + "?msg=updateSuccess";
+                    }
+                }
+            },
+            error: function () {
+                displayFailNoti("Update of talent failed.");
+            }
+
+        });
+    }
 
     $(document).ready(function () {
         var msg = getUrlParameter("Msg");
@@ -832,11 +869,18 @@
                 if (data == "NSFW") {
                     displayFailNoti("Creation of talent failed. Sensitive image detected");
                 } else {
-                    window.location.href = location.href + "?msg=success"
+                    var url = location.href;
+                    if (url.indexOf("?") > -1) {
+                        var baseUrl = url.split('?')[0].split('=');
+                        alert(baseUrl);
+                        window.location.href = baseUrl + "?msg=createSuccess"
+                    } else {
+                        window.location.href = location.href + "?msg=createSuccess";
+                    }
                 }
             },
             error: function () {
-                alert("Error");
+                displayFailNoti("Creation of talent failed.")
             }
         });
     }
