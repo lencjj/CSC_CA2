@@ -41,14 +41,14 @@ namespace CA2_Talents_Webapp.Controllers
                 recordList.Add(new
                 {
                     talentId = talent.TalentId,
-                    TalentName = talent.TalentName,
-                    TalentTitle = talent.TalentTitle,
-                    TalentDesc = talent.TalentDesc,
-                    ImageURL = talent.ImageURL,
-                    CreatedDate = talent.CreatedDate,
-                    CreatedBy = talent.CreatedBy,
-                    UpatedDate = talent.UpdatedDate,
-                    UpdatedBy = talent.UpdatedBy
+                    talentName = talent.TalentName,
+                    talentTitle = talent.TalentTitle,
+                    talentDesc = talent.TalentDesc,
+                    imageURL = talent.ImageURL,
+                    createdDate = talent.CreatedDate,
+                    createdBy = talent.CreatedBy,
+                    upatedDate = talent.UpdatedDate,
+                    updatedBy = talent.UpdatedBy
                 });
             }
 
@@ -81,7 +81,6 @@ namespace CA2_Talents_Webapp.Controllers
             var response = client.DetectSafeSearch(image);
             if (response.Adult.ToString().Equals("Likely") || response.Adult.ToString().Equals("VeryLikely"))
             {
-
                 System.IO.File.Delete(path);
                 return "NSFW";
             }
@@ -105,12 +104,13 @@ namespace CA2_Talents_Webapp.Controllers
                 System.IO.File.Delete(path);
                 return "NSFW";
             }
-            Console.WriteLine(response.Medical.ToString());
 
             TalentDb talentDb = new TalentDb(configuration);
             talent.ImageURL = talentImgFile.FileName;
             talentDb.addTalent(talent);
             await _service.UploadFileAsync(path);
+            System.IO.File.Delete(path);
+
             return "Successfully added";
         }
 
