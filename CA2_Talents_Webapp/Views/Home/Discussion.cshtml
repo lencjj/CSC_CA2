@@ -6,41 +6,128 @@
 <h2 class="pageHeader"> WELCOME TO THE TALENT'S PROFILE</h2>
 <div class="card" id="talentInfoContainer">
     <div class="card-header">
-        <h3>Title</h3>
+        <h3 id="singleTalentTitle">Title</h3>
     </div>
     <div class="card-body">
         <div class="imageContainer">
-            <img />
+            <img id="singleTalentImageURL" />
         </div>
-        <h4 class="card-title">Talent Name</h4>
-        <p class="card-text">Description.</p>
+        <h4 class="card-title" id="singleTalentName">Talent Name</h4>
+        <p class="card-text" id="singleTalentDesc">Description.</p>
     </div>
     <div class="card-footer">
         @*<a class="btn btn-primary" id="showCommentsBtn">Show Comments</a>*@
+        <div id="inlineDiv">
+            <button class="btn btn-danger" id="likeBtn" value="">&#10084;</button>
+            <p id="recommendations" style="display:none;"></p>
+        </div>
     </div>
 </div>
 
+<div id="disqus_thread"></div>
+
 @*<div class="card" id="commentsSection" style="display: none;">
-    <div class="card-header">
-        <h4>Comments</h4>
-    </div>
-    <div class="card-body">
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">Cras justo odio</li>
-            <li class="list-group-item">Dapibus ac facilisis in</li>
-            <li class="list-group-item">Vestibulum at eros</li>
-        </ul>
-    </div>
-    <div class="card-footer">
-        <input type="text" name="commentInput" id="commentInput" class="commentInput" />
-        <button class="btn btn-primary" id="commentBtn">Comment</button>
-    </div>
-</div>*@
+        <div class="card-header">
+            <h4>Comments</h4>
+        </div>
+        <div class="card-body">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Cras justo odio</li>
+                <li class="list-group-item">Dapibus ac facilisis in</li>
+                <li class="list-group-item">Vestibulum at eros</li>
+            </ul>
+        </div>
+        <div class="card-footer">
+            <input type="text" name="commentInput" id="commentInput" class="commentInput" />
+            <button class="btn btn-primary" id="commentBtn">Comment</button>
+        </div>
+    </div>*@
 
 <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/gh/recombee/js-api-client@3.0.0/dist/recombee-api-client.min.js"></script>
+
 <script>
+
+    var talentName, likeBtn, client, user, talentId, talentTitle, talentDesc, imageURL, createdDate;
+    var recomStr = "";
+    var recommendationStr = document.getElementById("recommendations");
+    client = new recombee.ApiClient('csc-ca2-dev', 'qXgeETH9NFYPL2Z7H590mdV83KM1W57WzbUznD6qRVGm9vG2tIYeIJ4LJvzzEhjP');
+    likeBtn = document.getElementById("likeBtn");
+
+
+    $(document).ready(function () {
+        talentName = getUrlParameter("TalentName");
+        likeBtn.value = talentName;
+        user = getUrlParameter("User");
+        likeBtn.style.animation = "pulse-animation 1.8s infinite";
+
+        talentId = sessionStorage.getItem('talentId');
+        talentName = sessionStorage.getItem('talentName');
+        talentTitle = sessionStorage.getItem('talentTitle');
+        talentDesc = sessionStorage.getItem('talentDesc');
+        imageURL = sessionStorage.getItem('imageURL');
+        createdDate = sessionStorage.getItem('createdDate');
+
+        var singleTalentTitle = document.getElementById('singleTalentTitle');
+        var singleTalentName = document.getElementById('singleTalentName');
+        var singleTalentDesc = document.getElementById('singleTalentDesc');
+
+        singleTalentTitle.innerHTML = talentTitle;
+        singleTalentName.innerHTML = talentName;
+        document.getElementById("singleTalentImageURL").src = "https://storetalentimages.s3-ap-southeast-1.amazonaws.com/" + imageURL;
+        singleTalentDesc.innerHTML = talentDesc;
+
+        //alert(imageURL);
+    });
+
+
+    $('#likeBtn').click(function () {
+        client.send(new recombee.AddPurchase(user, likeBtn.value),
+            (err, response) => {
+                //...
+            }
+        );
+        recomStr = "";
+        recommendationStr.innerHTML = "";
+        likeBtn.style.animation = "";
+        sendRecom();
+    });
+
+    function sendRecom() {
+        var callback = function (err, res) {
+            if (err) {
+                console.log(err);
+                // use fallback ...
+                return;
+            }
+            console.log(res.recomms);
+            for (var i = 0; i < 3; i++) {
+                recomStr += res.recomms[i].id + ", ";
+            }
+
+            $('#recommendations').css("display", "initial");
+            recommendationStr.innerHTML = "Similar talents: " + recomStr.slice(0, -2);
+        }
+        client.send(new recombee.RecommendItemsToUser(user, 3), callback);
+    }
+
+    function getUrlParameter(sParam) {
+        var sPageURL = window.location.search.substring(1),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+            }
+        }
+    }
+
     //var showCommentsBtn = document.getElementById('showCommentsBtn');
     //showCommentsBtn.addEventListener('click', function () {
     //    var commentsSection = document.getElementById('commentsSection');
@@ -52,5 +139,87 @@
     //        showCommentsBtn.innerHTML = "Show Comments";
     //    }
     //})
+
+    // qf's
+    var disqus_config = function () {
+        // Replace PAGE_URL with your page's canonical URL variable
+        this.page.url = 'http://ec2-52-3-250-33.compute-1.amazonaws.com/Home/Discussion4';
+
+        // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.identifier = '583729';
+    };
+
+    (function () {
+        var d = document, s = d.createElement('script');
+        s.src = 'https://lifetimetalents.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+
+    // URL    
+    $(document).ready(function () {
+        var url = window.location.href;
+        if (url.includes("Premium")) {
+            // Do nothing
+        } else if (url.indexOf("Standard") > -1) { // here
+            var dis = documemnt.getElementById("disqus_thread");
+            dis.style.display = "none";
+            // we aer  good
+        }
+
+    });
+
+    function getUrlParameter(sParam) {
+        var sPageURL = window.location.search.substring(1),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+            }
+        }
+    }
 </script>
+
+
+<noscript>
+    Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">
+        comments powered by Disqus.
+    </a>
+</noscript>
+
+
+<style>
+    #recommendations {
+        font-size: 2rem;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        vertical-align: middle;
+        margin-left: 2rem;
+        color: royalblue;
+    }
+
+    #singleTalentImageURL {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    #inlineDiv p, #inlineDiv button {
+        display: inline;
+    }
+
+    @@keyframes pulse-animation {
+        0% {
+            box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2);
+        }
+
+        100% {
+            box-shadow: 0 0 0 20px rgba(0, 0, 0, 0);
+        }
+    }
+</style>
 

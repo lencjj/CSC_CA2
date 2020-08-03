@@ -47,7 +47,7 @@ namespace CA2_Talents_Webapp.Controllers
                     imageURL = talent.ImageURL,
                     createdDate = talent.CreatedDate,
                     createdBy = talent.CreatedBy,
-                    upatedDate = talent.UpdatedDate,
+                    updatedDate = talent.UpdatedDate,
                     updatedBy = talent.UpdatedBy
                 });
             }
@@ -74,42 +74,42 @@ namespace CA2_Talents_Webapp.Controllers
                     talentImgFile.CopyTo(fileStream);
                 }
 
-                //Authenticate to the service by using Service Account
-                string relativePath = @"../../CSC_CA2/CA2_Talents_Webapp/GoogleVisionAI.json";
-                string credential_path = System.IO.Path.GetFullPath(relativePath);
-                Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
+            //Authenticate to the service by using Service Account
+            string relativePath = @"../../CSC_CA2/CA2_Talents_Webapp/GoogleVisionAI.json";
+            string credential_path = System.IO.Path.GetFullPath(relativePath);
+            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
 
-                // Instantiates a client
-                var client = ImageAnnotatorClient.Create();
-                // Load the image file into memory
-                var image = Image.FromFile(path);
-                // Check for NSFW images
-                var response = client.DetectSafeSearch(image);
-                if (response.Adult.ToString().Equals("Likely") || response.Adult.ToString().Equals("VeryLikely"))
-                {
-                    System.IO.File.Delete(path);
-                    return "NSFW";
-                }
-                if (response.Racy.ToString().Equals("Likely") || response.Racy.ToString().Equals("VeryLikely"))
-                {
-                    System.IO.File.Delete(path);
-                    return "NSFW";
-                }
-                if (response.Violence.ToString().Equals("Likely") || response.Violence.ToString().Equals("VeryLikely"))
-                {
-                    System.IO.File.Delete(path);
-                    return "NSFW";
-                }
-                if (response.Medical.ToString().Equals("Likely") || response.Medical.ToString().Equals("VeryLikely"))
-                {
-                    System.IO.File.Delete(path);
-                    return "NSFW";
-                }
-                if (response.Spoof.ToString().Equals("Likely") || response.Spoof.ToString().Equals("VeryLikely"))
-                {
-                    System.IO.File.Delete(path);
-                    return "NSFW";
-                }
+            // Instantiates a client
+            var client = ImageAnnotatorClient.Create();
+            // Load the image file into memory
+            var image = Image.FromFile(path);
+            // Check for NSFW images
+            var response = client.DetectSafeSearch(image);
+            if (response.Adult.ToString().Equals("Likely") || response.Adult.ToString().Equals("VeryLikely"))
+            {
+                System.IO.File.Delete(path);
+                return "NSFW";
+            }
+            if (response.Racy.ToString().Equals("Likely") || response.Racy.ToString().Equals("VeryLikely"))
+            {
+                System.IO.File.Delete(path);
+                return "NSFW";
+            }
+            if (response.Violence.ToString().Equals("Likely") || response.Violence.ToString().Equals("VeryLikely"))
+            {
+                System.IO.File.Delete(path);
+                return "NSFW";
+            }
+            if (response.Medical.ToString().Equals("Likely") || response.Medical.ToString().Equals("VeryLikely"))
+            {
+                System.IO.File.Delete(path);
+                return "NSFW";
+            }
+            if (response.Spoof.ToString().Equals("Likely") || response.Spoof.ToString().Equals("VeryLikely"))
+            {
+                System.IO.File.Delete(path);
+                return "NSFW";
+            }
 
                 await _service.UploadFileAsync(path);
                 System.IO.File.Delete(path);
