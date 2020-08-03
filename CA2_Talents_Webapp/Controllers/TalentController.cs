@@ -124,6 +124,7 @@ namespace CA2_Talents_Webapp.Controllers
             return "Successfully added";
         }
 
+
         public async Task<string> UpdateTalent(Talent talent, IFormFile talentImgFile)
         {
             string imageName = "";
@@ -146,7 +147,6 @@ namespace CA2_Talents_Webapp.Controllers
                 string relativePath = @"../../CSC_CA2/CA2_Talents_Webapp/GoogleVisionAI.json";
                 string credential_path = System.IO.Path.GetFullPath(relativePath);
                 Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
-
                 // Instantiates a client
                 var client = ImageAnnotatorClient.Create();
                 // Load the image file into memory
@@ -187,6 +187,25 @@ namespace CA2_Talents_Webapp.Controllers
             talent.ImageURL = imageName;
             talentDb.editTalent(talent);
             return "Successfully updated";
+        }
+        
+        [HttpDelete]
+        public string DeleteTalent(int talentId)
+        {
+            try
+            {
+                TalentDb talentDb = new TalentDb(configuration);
+                string msg = talentDb.deleteTalent(talentId);
+
+                Console.WriteLine("--------------Success delete!!-----------");
+                return msg;
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("------------ERROR DELETINg--------------"+ex);
+                return "error";
+            }
         }
     }
 }

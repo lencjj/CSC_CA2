@@ -24,6 +24,7 @@
         display: inline-block;
         box-shadow: 0px -3px 6px 2px rgba(0,0,0,0.2);
     }
+
     .talentImage {
         width: 100%;
         height: 100%;
@@ -124,6 +125,61 @@
     #createTalentDiv {
         margin: 0 auto 2rem;
     }
+    #loader {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        /* bring your own prefixes */
+        transform: translate(-50%, -50%);
+    }
+    /*Hidden class for adding and removing*/
+    .lds-dual-ring.hidden {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        /* bring your own prefixes */
+        transform: translate(-50%, -50%);
+        display: none;
+    }
+
+    /*Add an overlay to the entire page blocking any further presses to buttons or other elements.*/
+    .overlay {
+        width: 100%;
+        height: 100vh;
+        background: rgba(0,0,0,.0);
+        z-index: 999;
+        opacity: 1;
+        transition: all 0.5s;
+    }
+
+    /*Spinner Styles*/
+    .lds-dual-ring {
+        display: inline-block;
+        width: 80px;
+        height: 80px;
+    }
+
+        .lds-dual-ring:after {
+            content: " ";
+            display: block;
+            width: 64px;
+            height: 64px;
+            margin: 5% auto;
+            border-radius: 50%;
+            border: 6px solid #fff;
+            border-color: rebeccapurple transparent rebeccapurple transparent;
+            animation: lds-dual-ring 1.2s linear infinite;
+        }
+
+    @@keyframes lds-dual-ring {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
 </style>
 
 <div class="body">
@@ -195,12 +251,12 @@
                 </div>
                 <div class="modal-body" id="deleteMessage"></div>
 
-                <form action="../GIE_DeleteRewardServlet">
-                    <input type="hidden" id="deleteRewardID" name="deleteRewardID" class="deleteRewardID">
+                <form>
+                    <input type="hidden" id="deleteTalentID" name="deleteTalentID" class="deleteTalentID">
 
                     <div class="modal-footer">
                         <button id="deleteModalCancelBtn" type="button" class="btn btn-secondary" data-dismiss="modal">CANCEL</button>
-                        <button id="deleteModalDeleteBtn" type="submit" class="btn btn-primary" onClick="resetMode()">
+                        <button id="deleteModalDeleteBtn" type="submit" class="btn btn-primary" onClick="deleteTalent()">
                             DELETE
                         </button>
                     </div>
@@ -214,6 +270,8 @@
     <input class="btn btn-success" type="button" id="createBtn" value="CREATE" data-toggle="modal" data-target="#createTalentModal">
     <hr>
 
+    <div id="loader" class="lds-dual-ring hidden overlay"></div>
+
     <table cellpadding="0" cellspacing="0"
            border="0" class="row-border"
            id="talentsDatatable" style="width:100%">
@@ -224,6 +282,7 @@
                 <th></th>
             </tr>
         </thead>
+
 
         <tbody id="talentsTableBody"></tbody>
 
@@ -250,10 +309,6 @@
                             <div class="imageCreateTalentPreview"></div>
                             <label class="btn btn-primary" id="createTalentImgBtn">
                                 <!--Upload Image to S3-->
-                                
-                                 
-
-
                                 Upload<input type="file" class="createTalentUploadFile img" id="createTalentUploadFile" name="talentImgFile" value="Upload Photo" accept="image/*">
                             </label>
                         </div><!-- col-2 -->
@@ -334,8 +389,12 @@
     function getAllTalents() {
         $.ajax({
             url: '/Talent/GetAllTalents',
-            method: 'GET'
+            method: 'GET',
+            beforeSend: function () { // Before we send the request, remove the .hidden class from the spinner and default to inline-block.
+                $('#loader').removeClass('hidden');
+            }
         }).done(function (data) {
+            $('#loader').addClass('hidden');
 
             for (var i = 0; i < data.length; i++) {
                 let talent = data[i];
@@ -385,19 +444,19 @@
                 $rowElement.append($cellElement);
 
                 $cellElement = $(`<td style="vertical-align: top;"><div id="talentContentIconsColumn">
-                                <div class="flex-column" id="manageTalentIcons">
-                                    <div class="talentIconRow">
-                                        <button id="cancelBtn${i}" onclick="cancelEdit(${i})" style="display:none">Cancel</button>
-                                        <span aria-hidden="true" id="editIcon${i}" value="${i}" class="editIcon" onclick="toggleEditMode(${i})"><i id="iEdit${i}" class="far fa-edit"></i></span>
-                                        <span id="crossIcon${i}" aria-hidden="true" data-toggle="modal" data-target="#deleteTalentModal"
-                                              onClick="insertDeleteVals(` + talent.talentId + `, '` + talent.talentName + `', '` + talent.talentTitle + `')"
-                                              ><i class="fas fa-times"></i></span>
+                                        <div class="flex-column" id="manageTalentIcons">
+                                            <div class="talentIconRow">
+                                                <button id="cancelBtn${i}" onclick="cancelEdit(${i})" style="display:none">Cancel</button>
+                                                <span aria-hidden="true" id="editIcon${i}" value="${i}" class="editIcon" onclick="toggleEditMode(${i})"><i id="iEdit${i}" class="far fa-edit"></i></span>
+                                                <span id="crossIcon${i}" aria-hidden="true" data-toggle="modal" data-target="#deleteTalentModal"
+                                                      onClick="insertDeleteVals(` + talent.talentId + `, '` + talent.talentName + `', '` + talent.talentTitle + `')"
+                                                      ><i class="fas fa-times"></i></span>
 
-                                        <p id="hiddenID${i}" hidden="true"></p>
-                                    </div>
-                                    <input class="btn btn-primary commentBtnClass" onclick="goToDiscussion()" type="button" id="commentBtn" value="Comment">
-                                </div>
-                            </div></td>`);
+                                                <p id="hiddenID${i}" hidden="true"></p>
+                                            </div>
+                                            <input class="btn btn-primary commentBtnClass" onclick="goToDiscussion()" type="button" id="commentBtn" value="Comment">
+                                        </div>
+                                    </div></td>`);
 
                 $rowElement.append($cellElement);
                 $('#talentsTableBody').append($rowElement);//inserting a new row
@@ -463,8 +522,19 @@
     }
     // End of document css and validation on load
 
-    function resetMode() {
+    function deleteTalent() {
         editMode = false;
+        let talentId = $('#deleteTalentID').val();
+
+        $.ajax({
+            url: '/Talent/DeleteTalent?talentId=' + talentId,
+            method: 'DELETE'
+        }).done(function (data) {
+            getAllTalents();
+        }).fail(function () {
+            alert("Ajax failed!..");
+        })
+
     }
 
     var title;
@@ -584,7 +654,7 @@
     function insertDeleteVals(talentId, talentName, talentTitle) {
         var div = document.getElementById('deleteMessage');
 
-        //$('#deleteRewardID').val(rewardID);
+        $('#deleteTalentID').val(talentId);
 
         div.innerHTML = "Are you sure you want to delete &#34;" + talentName + "&#34; ?";
     }
