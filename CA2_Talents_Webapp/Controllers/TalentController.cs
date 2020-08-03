@@ -38,6 +38,10 @@ namespace CA2_Talents_Webapp.Controllers
                 talentImgFile.CopyTo(fileStream);
             }
 
+            //Authenticate to the service by using Service Account
+            string relativePath = @"../../CSC_CA2/CA2_Talents_Webapp/GoogleVisionAI.json";
+            string credential_path = System.IO.Path.GetFullPath(relativePath);
+            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
             // Instantiates a client
             var client = ImageAnnotatorClient.Create();
             // Load the image file into memory
@@ -60,12 +64,12 @@ namespace CA2_Talents_Webapp.Controllers
                 System.IO.File.Delete(path);
                 return "NSFW";
             }
-            if (response.Medical.ToString().Equals("L") || response.Medical.ToString().Equals("VeryLikely"))
+            if (response.Medical.ToString().Equals("Likely") || response.Medical.ToString().Equals("VeryLikely"))
             {
                 System.IO.File.Delete(path);
                 return "NSFW";
             }
-            if (response.Spoof.ToString().Equals("LIKELY") || response.Spoof.ToString().Equals("VERY LIKELY"))
+            if (response.Spoof.ToString().Equals("Likely") || response.Spoof.ToString().Equals("VeryLikely"))
             {
                 System.IO.File.Delete(path);
                 return "NSFW";
