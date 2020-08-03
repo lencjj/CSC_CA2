@@ -68,11 +68,6 @@ namespace CA2_Talents_Webapp.Controllers
                 talentImgFile.CopyTo(fileStream);
             }
 
-            //Authenticate to the service by using Service Account
-            string relativePath = @"../../CSC_CA2/CA2_Talents_Webapp/GoogleVisionAI.json";
-            string credential_path = System.IO.Path.GetFullPath(relativePath);
-            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
-
             // Instantiates a client
             var client = ImageAnnotatorClient.Create();
             // Load the image file into memory

@@ -17,6 +17,11 @@
     </div>
     <div class="card-footer">
         @*<a class="btn btn-primary" id="showCommentsBtn">Show Comments</a>*@
+        <div id="inlineDiv">
+            <button class="btn btn-danger" id="likeBtn" value="">&#10084;</button>
+            <p id="recommendations" style="display:none;"></p>
+        </div>
+        
     </div>
 </div>
 
@@ -40,7 +45,69 @@
 <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/gh/recombee/js-api-client@3.0.0/dist/recombee-api-client.min.js"></script>
+
 <script>
+
+    var talentName, likeBtn, client, user;
+    var recomStr = "";
+    var recommendationStr = document.getElementById("recommendations");
+    client = new recombee.ApiClient('csc-ca2-dev', 'qXgeETH9NFYPL2Z7H590mdV83KM1W57WzbUznD6qRVGm9vG2tIYeIJ4LJvzzEhjP');
+    likeBtn = document.getElementById("likeBtn");
+
+    $(document).ready(function () {
+        talentName = getUrlParameter("TalentName");
+        likeBtn.value = talentName;
+        user = getUrlParameter("User");
+        likeBtn.style.animation = "pulse-animation 1.8s infinite";
+        
+    });
+
+    $('#likeBtn').click(function () {
+        client.send(new recombee.AddPurchase(user, likeBtn.value),
+            (err, response) => {
+                //...
+            }
+        );
+        recomStr = "";
+        recommendationStr.innerHTML = "";
+        likeBtn.style.animation = "";
+        sendRecom();
+    });
+
+    function sendRecom() {
+        var callback = function (err, res) {
+            if (err) {
+                console.log(err);
+                // use fallback ...
+                return;
+            }
+            console.log(res.recomms);
+            for (var i = 0; i < 3; i++) {
+                recomStr += res.recomms[i].id + ", ";
+            }
+            
+            $('#recommendations').css("display", "initial");
+            recommendationStr.innerHTML = "Similar talents: " + recomStr.slice(0, -2);
+        }
+        client.send(new recombee.RecommendItemsToUser(user, 3), callback);
+    }
+
+    function getUrlParameter(sParam) {
+        var sPageURL = window.location.search.substring(1),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+            }
+        }
+    }
+
     //var showCommentsBtn = document.getElementById('showCommentsBtn');
     //showCommentsBtn.addEventListener('click', function () {
     //    var commentsSection = document.getElementById('commentsSection');
@@ -53,4 +120,28 @@
     //    }
     //})
 </script>
+
+<style>
+    #recommendations {
+        font-size: 2rem;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        vertical-align: middle;
+        margin-left: 2rem;
+        color: royalblue;
+    }
+
+    #inlineDiv p, #inlineDiv button{
+        display: inline;
+    }
+
+    @@keyframes pulse-animation {
+        0% {
+            box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2);
+        }
+
+        100% {
+            box-shadow: 0 0 0 20px rgba(0, 0, 0, 0);
+        }
+    }
+</style>
 
