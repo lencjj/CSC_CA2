@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.3.106.28" />
+    <PackageReference Include="Google.Cloud.Vision.V1" Version="2.0.0" />
   </ItemGroup>
 
 </Project>

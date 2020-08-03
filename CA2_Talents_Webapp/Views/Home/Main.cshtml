@@ -72,7 +72,7 @@
             font-size: 3.5rem;
         }
 
-    #createTalentsBtn {
+    #createTalentBtn {
         background-color: cornflowerblue;
         color: white;
         font-size: 1.6rem;
@@ -81,12 +81,12 @@
         border: none;
     }
 
-    .imgCreateTalents {
+    .imgCreateTalent {
         margin: auto 1rem auto auto;
         width: 20rem;
     }
 
-    .imageCreateTalentsPreview {
+    .imageCreateTalentPreview {
         width: 100%;
         height: 210px;
         background-position: center center;
@@ -97,13 +97,13 @@
         box-shadow: 0px -3px 6px 2px rgba(0,0,0,0.2);
     }
 
-    #createTalentUploadImgBtn {
+    #createTalentUploadFile {
         width: 0px;
         height: 0px;
         overflow: hidden;
     }
 
-    #createTalentsImgBtn {
+    #createTalentImgBtn {
         display: block;
         border-radius: 0px;
         box-shadow: 0px 4px 6px 2px rgba(0,0,0,0.2);
@@ -116,7 +116,7 @@
         font-family: sans-serif;
     }
 
-    #createRewardDiv {
+    #createTalentDiv {
         margin: 0 auto 2rem;
     }
 
@@ -208,7 +208,7 @@
     </div>
     <!--Delete Reward Modal End-->
 
-    <input class="btn btn-success" type="button" id="createBtn" value="CREATE" data-toggle="modal" data-target="#createRewardsModal">
+    <input class="btn btn-success" type="button" id="createBtn" value="CREATE" data-toggle="modal" data-target="#createTalentModal">
     <hr>
 
     <table cellpadding="0" cellspacing="0"
@@ -228,12 +228,12 @@
     </table>
 </div>
 
-<!-- Create Rewards Modal -->
-<div class="modal fade bd-example-modal-lg" id="createRewardsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- Create Talnts Modal -->
+<div class="modal fade bd-example-modal-lg" id="createTalentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-right" role="document">
         <div class="modal-content">
             <div class="modal-header ">
-                <h1 class="modal-title " id="exampleModalLongTitle">Create Rewards</h1>
+                <h1 class="modal-title " id="exampleModalLongTitle">Create Talent</h1>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -242,16 +242,16 @@
             <!-- Image Container -->
             <div class="modal-body">
 
-                <form class="form-horizontal" id="step2" action="/Talent/CreateTalent" method="post">
+                <form class="form-horizontal" id="step2" onsubmit="createTalent()" method="post" enctype="multipart/form-data">
                     <div class="form-row" id="createImgContainer">
-                        <div class="imgCreateTalents col-md-5">
-                            <div class="imageCreateTalentsPreview"></div>
-                            <label class="btn btn-primary" id="createTalentsImgBtn">
-                                Upload<input type="file" class="createTalentsUploadFile img" id="createTalentUploadImgBtn" name="imageURL" value="Upload Photo" accept="image/*">
+                        <div class="imgCreateTalent col-md-5">
+                            <div class="imageCreateTalentPreview"></div>
+                            <label class="btn btn-primary" id="createTalentImgBtn">
+                                Upload<input type="file" class="createTalentUploadFile img" id="createTalentUploadFile" name="talentImgFile" value="Upload Photo" accept="image/*">
                             </label>
                         </div><!-- col-2 -->
                         <!-- Product Name -->
-                        <div class="form-group col-md-5 align-items-center justify-content-center" id="createRewardDiv">
+                        <div class="form-group col-md-5 align-items-center justify-content-center" id="createTalentDiv">
 
                             <div class="form-group" id="creTitleDiv">
                                 <label for="createName" class="fieldHeader">Title</label>
@@ -264,17 +264,17 @@
                             </div>
 
                             <!-- Description -->
-                            <div class="form-group" id="createDesc">
+                            <div class="form-group" id="creDescDiv">
                                 <label for="createDescription">Description</label>
                                 <textarea class="form-control rounded-0" id="createDesc" rows="3" name="talentDesc" placeholder="Enter description..." maxlength="100" required></textarea>
                             </div>
 
-                            <input id="name" name="createdBy" type="hidden" value="@TempData["name"]" />
+                            <input id="createdByName" name="createdBy" type="hidden" value="@TempData["name"]" />
                         </div>
 
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" id="createRewardModalBtn" class="btn btn-primary">Create</button>
+                        <button type="submit" id="createTalentBtn" class="btn btn-primary">Create</button>
                     </div>
                 </form>
             </div>
@@ -289,6 +289,14 @@
 <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
 
 <script>
+    $(document).ready(function () {
+        var url = window.location.href;
+        var msgVal = url.split('?')[1].split('=');
+        msgVal.shift();
+        if (msgVal == "success") {
+            displaySuccessNoti("Talent successfully created.")
+        }
+    })
     //var rewardListLength = document.getElementById("rewardListLength").value;
     var editIcon, uploadBtn, webAmt, startDate, endDate, uploadBtnColor,
         rewardTitle, cross, createRewardStart, createRewardEnd,
@@ -509,7 +517,7 @@
 
     //Logic for image preview in create rewards modal
     $(function () {
-        $(document).on("change", ".createRewardsUploadFile", function () {
+        $(document).on("change", ".createTalentUploadFile", function () {
             var uploadFile = $(this);
             var files = !!this.files ? this.files : [];
             if (!files.length || !window.FileReader)
@@ -521,7 +529,7 @@
 
                 reader.onloadend = function () { // set image data as background of div
                     //alert(uploadFile.closest(".upimage").find('.imagePreview').length);
-                    uploadFile.closest(".imgCreateRewards").find('.imageCreateRewardsPreview').css("background-image", "url(" + this.result + ")");
+                    uploadFile.closest('.imgCreateTalent').find('.imageCreateTalentPreview').css("background-image", "url(" + this.result + ")");
                 };
             }
 
@@ -678,6 +686,37 @@
 
     function goToDiscussion() {
         window.location.href = "/Home/Discussion";
+    }
+
+    function createTalent() {
+        event.preventDefault();
+        var fileInput = document.getElementById("createTalentUploadFile");
+        var file = fileInput.files[0];
+        var formData = new FormData();
+        formData.append('talentImgFile', file);
+        formData.append('TalentTitle', $('#createTitle').val());
+        formData.append('TalentName', $('#createName').val());
+        formData.append('TalentDesc', $('#createDesc').val());
+        formData.append('CreatedBy', $('#createdByName').val());
+        formData.append('UpdatedBy', $('#createdByName').val());
+        $.ajax({
+            url: '/Talent/CreateTalent',
+            method: 'POST',
+            processData: false,
+            contentType: false,
+            async: false,
+            data: formData,
+            success: function (data) {
+                if (data == "NSFW") {
+                    displayFailNoti("Creation of talent failed. Sensitive image detected");
+                } else {
+                    window.location.href = location.href + "?msg=success"
+                }
+            },
+            error: function () {
+                alert("Error");
+            }
+        });
     }
 
 </script>
