@@ -16,3 +16,7 @@
 #submitBtn:hover {
     background-position: right;
 }
+
+select.form-control:not([size]):not([multiple]) {
+    height: auto;
+}
