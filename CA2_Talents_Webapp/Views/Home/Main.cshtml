@@ -361,6 +361,8 @@
                 displaySuccessNoti("Talent successfully created.");
             } else if (msgVal == "updateSuccess") {
                 displaySuccessNoti("Talent successfully updated.");
+            } else if (msgVal == "deleteSuccess") {
+                displaySuccessNoti("Talent successfully deleted.");
             }
         }
     })
@@ -523,6 +525,7 @@
     // End of document css and validation on load
 
     function deleteTalent() {
+        event.preventDefault();
         editMode = false;
         let talentId = $('#deleteTalentID').val();
 
@@ -530,9 +533,17 @@
             url: '/Talent/DeleteTalent?talentId=' + talentId,
             method: 'DELETE'
         }).done(function (data) {
-            getAllTalents();
+            if (data == "deleteSuccess") {
+                var url = location.href;
+                if (url.indexOf("?") > -1) {
+                    var baseUrl = url.split('?')[0].split('=');
+                    window.location.href = baseUrl + "?msg=deleteSuccess"
+                } else {
+                    window.location.href = location.href + "?msg=deleteSuccess";
+                }
+            }
         }).fail(function () {
-            alert("Ajax failed!..");
+            displayFailNoti("Failed to delete");
         })
 
     }
@@ -740,7 +751,13 @@
                 if (data == "NSFW") {
                     displayFailNoti("Update of talent failed. Sensitive image detected");
                 } else {
-                    window.location.href = location.href + "?msg=updateSuccess"
+                    var url = location.href;
+                    if (url.indexOf("?") > -1) {
+                        var baseUrl = url.split('?')[0].split('=');
+                        window.location.href = baseUrl + "?msg=updateSuccess"
+                    } else {
+                        window.location.href = location.href + "?msg=updateSuccess";
+                    }
                 }
             },
             error: function () {
@@ -816,7 +833,14 @@
                 if (data == "NSFW") {
                     displayFailNoti("Creation of talent failed. Sensitive image detected");
                 } else {
-                    window.location.href = location.href + "?msg=createSuccess"
+                    var url = location.href;
+                    if (url.indexOf("?") > -1) {
+                        var baseUrl = url.split('?')[0].split('=');
+                        alert(baseUrl);
+                        window.location.href = baseUrl + "?msg=createSuccess"
+                    } else {
+                        window.location.href = location.href + "?msg=createSuccess";
+                    }
                 }
             },
             error: function () {

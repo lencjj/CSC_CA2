@@ -127,7 +127,7 @@ namespace CA2_Talents_Webapp.Controllers
 
         public async Task<string> UpdateTalent(Talent talent, IFormFile talentImgFile)
         {
-            string imageName = "";
+            string imageName = talent.ImageURL;
             //Save to images
             if (talentImgFile == null)
             {
@@ -195,7 +195,8 @@ namespace CA2_Talents_Webapp.Controllers
             try
             {
                 TalentDb talentDb = new TalentDb(configuration);
-                string msg = talentDb.deleteTalent(talentId);
+                talentDb.deleteTalent(talentId);
+                string msg = "deleteSuccess";
 
                 Console.WriteLine("--------------Success delete!!-----------");
                 return msg;
