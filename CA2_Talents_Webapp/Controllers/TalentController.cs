@@ -29,7 +29,32 @@ namespace CA2_Talents_Webapp.Controllers
             _service = service;
         }
 
-        // --- All the talent methods ---
+        [HttpGet] 
+        public JsonResult GetAllTalents()
+        {
+            TalentDb talentDb = new TalentDb(configuration);
+            List<Talent> talents = new List<Talent>();
+            talents = talentDb.getAllTalents();
+            List<object> recordList = new List<object>();
+            foreach (var talent in talents)
+            {
+                recordList.Add(new
+                {
+                    talentId = talent.TalentId,
+                    talentName = talent.TalentName,
+                    talentTitle = talent.TalentTitle,
+                    talentDesc = talent.TalentDesc,
+                    imageURL = talent.ImageURL,
+                    createdDate = talent.CreatedDate,
+                    createdBy = talent.CreatedBy,
+                    upatedDate = talent.UpdatedDate,
+                    updatedBy = talent.UpdatedBy
+                });
+            }
+
+            return new JsonResult(recordList);
+        }
+
         [HttpPost]
         public async Task<string> CreateTalent (Talent talent, IFormFile talentImgFile)
         {
@@ -56,7 +81,6 @@ namespace CA2_Talents_Webapp.Controllers
             var response = client.DetectSafeSearch(image);
             if (response.Adult.ToString().Equals("Likely") || response.Adult.ToString().Equals("VeryLikely"))
             {
-
                 System.IO.File.Delete(path);
                 return "NSFW";
             }
@@ -80,14 +104,18 @@ namespace CA2_Talents_Webapp.Controllers
                 System.IO.File.Delete(path);
                 return "NSFW";
             }
-            Console.WriteLine(response.Medical.ToString());
 
             TalentDb talentDb = new TalentDb(configuration);
             talent.ImageURL = talentImgFile.FileName;
             talentDb.addTalent(talent);
             await _service.UploadFileAsync(path);
+            System.IO.File.Delete(path);
+
             return "Successfully added";
         }
+
+
+
 
 
     }

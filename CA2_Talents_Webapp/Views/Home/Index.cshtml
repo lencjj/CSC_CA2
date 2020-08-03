@@ -76,9 +76,9 @@
         if (msg == null) {
         } else if (msg == "Success") {
             toastr.success('Successfully registered!');
-        } else {
-            toastr.error('Error registering!');
-        }
+        } else if (msg == "loginFailed") {
+            toastr.error('Incorrect username or password!');
+        } 
 
     });
 

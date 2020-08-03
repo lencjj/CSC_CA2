@@ -98,13 +98,13 @@ namespace CA2_Talents_Webapp.Controllers
                 }
                 else
                 { 
-                    return Redirect("/Home/Login");
+                    return Redirect("/?Msg=loginFailed");
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Login failed: " + ex.Message);
-                return Redirect("/Home/Login?Msg=" + ex.Message);
+                return Redirect("/?Msg=loginFailed");
             }
         }
     }
