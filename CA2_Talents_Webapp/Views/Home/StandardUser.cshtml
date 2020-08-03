@@ -103,7 +103,7 @@
     var itemIdBtn = document.getElementById("v1");
     var itemLikeBtn = document.getElementById("l1");
     var client = new recombee.ApiClient('csc-ca2-dev', 'qXgeETH9NFYPL2Z7H590mdV83KM1W57WzbUznD6qRVGm9vG2tIYeIJ4LJvzzEhjP');
-    var recomStr;
+    var recomStr = "";
 
     // test
     function testNav() {
@@ -138,10 +138,13 @@
                 return;
             }
             console.log(res.recomms);
-            recomStr = res.recomms[0].id;
-            alert("recommended id:" + recomStr);
+            for (var i = 0; i < 3; i++) {
+                recomStr += res.recomms[i].id + ", ";
+            }
+            
+            alert("recommended id:" + recomStr.slice(0, -2));
         }
-        client.send(new recombee.RecommendItemsToUser(user.value, 1), callback);
+        client.send(new recombee.RecommendItemsToUser(user.value, 3), callback);
     }
 
 </script>

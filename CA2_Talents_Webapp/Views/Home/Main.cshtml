@@ -1,10 +1,11 @@
 ﻿<h1>@TempData["plan"]</h1>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
 <script src='https://kit.fontawesome.com/a076d05399.js'></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/recombee/js-api-client@3.0.0/dist/recombee-api-client.min.js"></script>
 
 
 <style>
@@ -61,16 +62,16 @@
         font-weight: bold;
     }
 
-        .close:hover,
-        .close:focus {
-            color: red;
-            text-decoration: none;
-            cursor: pointer;
-        }
+    .close:hover,
+    .close:focus {
+        color: red;
+        text-decoration: none;
+        cursor: pointer;
+    }
 
-        .close span {
-            font-size: 3.5rem;
-        }
+    .close span {
+        font-size: 3.5rem;
+    }
 
     #createTalentsBtn {
         background-color: cornflowerblue;
@@ -120,7 +121,9 @@
         margin: 0 auto 2rem;
     }
 
-
+    input[type="search"] {
+        border: 1px solid grey;
+    }
 </style>
 
 <div class="body">
@@ -288,16 +291,17 @@
 <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
 
 <script>
     //var rewardListLength = document.getElementById("rewardListLength").value;
     var editIcon, uploadBtn, webAmt, startDate, endDate, uploadBtnColor,
         rewardTitle, cross, createRewardStart, createRewardEnd,
-        rewardDesc, rewardCat, rewardPrice, counter, trVal, msg, user;
+        rewardDesc, rewardCat, rewardPrice, counter, trVal, msg, user, client;
 
+    client = new recombee.ApiClient('csc-ca2-dev', 'qXgeETH9NFYPL2Z7H590mdV83KM1W57WzbUznD6qRVGm9vG2tIYeIJ4LJvzzEhjP');
     user = document.getElementById("user").value;
-    
+
     // Start of document css and validation on load
     $('#talentsDatatable').DataTable({
         pagingType: 'full_numbers'
@@ -366,7 +370,7 @@
                                               ><i class="fas fa-times"></i></span>
                                         <p id="hiddenID${i}" hidden="true"><%=rewards.get(i).getRewardID()%></p>
                                     </div>
-                                    <button class="btn btn-primary commentBtnClass" onclick="goToDiscussion()" id="commentBtn" value="Comment">Comment<button>
+                                    <button class="btn btn-primary commentBtnClass" id="commentBtn" value="talentName">Comment</button>
                                 </div>
                             </div></td>`);
 
@@ -378,6 +382,16 @@
     $('.editIcon').click(function () {
         var triggerID = $(this).attr("value");
         toggleEditMode(triggerID);
+    });
+
+    $('.commentBtnClass').click(function () {
+        var talentName = $(this).attr("value");
+        client.send(new recombee.AddDetailView(user, talentName),
+            (err, response) => {
+                //...
+            }
+        );
+        goToDiscussion(talentName);
     });
 
     //for loop for dynamic element IDs
@@ -679,8 +693,8 @@
         }
     }
 
-    function goToDiscussion() {
-        window.location.href = "/Home/Discussion";
+    function goToDiscussion(talentName) {
+        window.location.href = "/Home/Discussion?User=" + user + "&TalentName=" + talentName;
     }
 
 </script>
