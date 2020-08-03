@@ -242,33 +242,34 @@
             <!-- Image Container -->
             <div class="modal-body">
 
-                <form class="form-horizontal " id="step2">
+                <form class="form-horizontal" id="step2" action="/Talent/CreateTalent" method="post">
                     <div class="form-row" id="createImgContainer">
                         <div class="imgCreateTalents col-md-5">
                             <div class="imageCreateTalentsPreview"></div>
                             <label class="btn btn-primary" id="createTalentsImgBtn">
-                                Upload<input type="file" class="createTalentsUploadFile img" id="createTalentUploadImgBtn" value="Upload Photo" accept="image/*">
+                                Upload<input type="file" class="createTalentsUploadFile img" id="createTalentUploadImgBtn" name="imageURL" value="Upload Photo" accept="image/*">
                             </label>
                         </div><!-- col-2 -->
                         <!-- Product Name -->
                         <div class="form-group col-md-5 align-items-center justify-content-center" id="createRewardDiv">
 
-                            <div class="form-group" id="creNameDiv">
+                            <div class="form-group" id="creTitleDiv">
                                 <label for="createName" class="fieldHeader">Title</label>
-                                <input type="text" class="form-control form-control-lg" id="createName" name="createName" placeholder="Enter product name..." maxlength="16" required>
+                                <input type="text" class="form-control form-control-lg" id="createTitle" name="talentTitle" placeholder="Enter title..." maxlength="16" required>
                             </div>
 
                             <div class="form-group" id="creNameDiv">
-                                <label for="createName" class="fieldHeader">Product Name</label>
-                                <input type="text" class="form-control form-control-lg" id="createName" name="createName" placeholder="Enter product name..." maxlength="16" required>
+                                <label for="createName" class="fieldHeader">Talent Name</label>
+                                <input type="text" class="form-control form-control-lg" id="createName" name="talentName" placeholder="Enter talent name..." maxlength="16" required>
                             </div>
 
                             <!-- Description -->
                             <div class="form-group" id="createDesc">
                                 <label for="createDescription">Description</label>
-                                <textarea class="form-control rounded-0" id="createDesc" rows="3" name="createDescription" placeholder="Enter description..." maxlength="100" required></textarea>
+                                <textarea class="form-control rounded-0" id="createDesc" rows="3" name="talentDesc" placeholder="Enter description..." maxlength="100" required></textarea>
                             </div>
 
+                            <input id="name" name="createdBy" type="hidden" value="@TempData["name"]" />
                         </div>
 
                     </div>

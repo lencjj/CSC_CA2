@@ -1,0 +1,52 @@
+﻿@{
+    ViewData["Title"] = "Standard Talent Page";
+}
+<button class="btn btn-primary" id="v1" value="item1">View Item 1</button>
+<button class="btn btn-success" id="l1" value="item1">Like Item 1</button>
+<button class="btn btn-primary" id="v2">View Item 2</button>
+<button class="btn btn-success" id="l2">Like Item 2</button>
+<input type="hidden" id="user" value="@TempData["name"]" />
+
+    email = @TempData["name"];
+
+
+<script>
+    var user = document.getElementById("user").value;
+    var itemIdBtn = document.getElementById("v1");
+    var itemLikeBtn = document.getElementById("l1");
+    var client = new recombee.ApiClient('csc-ca2-dev', 'qXgeETH9NFYPL2Z7H590mdV83KM1W57WzbUznD6qRVGm9vG2tIYeIJ4LJvzzEhjP');
+    var recomStr;
+
+
+    itemIdBtn.onclick = function () {
+        client.send(new recombee.AddDetailView(user.value, itemIdBtn.value),
+            (err, response) => {
+                //...
+            }
+        );
+    }
+
+    itemLikeBtn.onclick = function () {
+        client.send(new recombee.AddPurchase(user.value, itemLikeBtn.value),
+            (err, response) => {
+                //...
+            }
+        );
+        sendRecom();
+    }
+
+    function sendRecom() {
+        var callback = function (err, res) {
+            if (err) {
+                console.log(err);
+                // use fallback ...
+                return;
+            }
+            console.log(res.recomms);
+            recomStr = res.recomms[0].id;
+            alert("recommended id:" + recomStr);
+        }
+        client.send(new recombee.RecommendItemsToUser(user.value, 1), callback);
+    }
+
+</script>
