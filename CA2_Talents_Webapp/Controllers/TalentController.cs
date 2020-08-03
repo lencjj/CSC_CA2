@@ -114,7 +114,24 @@ namespace CA2_Talents_Webapp.Controllers
             return "Successfully added";
         }
 
+        [HttpDelete]
+        public string DeleteTalent(int talentId)
+        {
+            try
+            {
+                TalentDb talentDb = new TalentDb(configuration);
+                string msg = talentDb.deleteTalent(talentId);
 
+                Console.WriteLine("--------------Success delete!!-----------");
+                return msg;
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("------------ERROR DELETINg--------------"+ex);
+                return "error";
+            }
+        }
 
 
 
