@@ -1,4 +1,4 @@
 # CSC CA2
 ## 
 ### Detailed System Architecture Diagram:
-![](CA2_Talents_Webapp/Images/DetailedSystemArchitectureDiagram.png)
+![](CA2_Talents_Webapp/Images/DetailedSystemArchitectureDiagram1.png)
