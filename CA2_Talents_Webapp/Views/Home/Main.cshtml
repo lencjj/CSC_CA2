@@ -173,6 +173,12 @@
             animation: lds-dual-ring 1.2s linear infinite;
         }
 
+    .exitAccountContainer {
+        position: absolute;
+        top: 2%;
+        right: 2%;
+    }
+
     @@keyframes lds-dual-ring {
         0% {
             transform: rotate(0deg);
@@ -231,16 +237,27 @@
                 "hideMethod": "fadeOut"
             };
             toastr.error(msg);
-        }
-        ;
+        };
     </script>
 
     @*email = @TempData["name"];
         plan = @TempData["plan"];*@
+    <div class="exitAccountContainer" id="exitAccountContainer">
+        <a href="/" class="logout-tag" id="logout-tag">Logout</a>
+        <a href="/Home/Register" class="reg-tag" id="reg-tag">Sign up an account</a>
+    </div>
     <form action="/Billing/InsertBQData" method="post">
         <input id="name" name="username" type="hidden" value="@TempData["name"]" />
         <input id="plan" name="userplan" type="hidden" value="@TempData["plan"]" />
+        <input id="customerId" name="customerId" type="hidden" value="@TempData["stripeId"]" />
         <button class="btn btn-primary" id="publishToBQBtn">Publish data to BQ</button>
+    </form>
+    <br />
+    <form action="/Billing/CreateSession" method="post">
+        <input id="name" name="username" type="hidden" value="@TempData["name"]" />
+        <input id="plan" name="userplan" type="hidden" value="@TempData["plan"]" />
+        <input id="customerId" name="customerId" type="hidden" value="@TempData["stripeId"]" />
+        <button class="btn btn-primary" id="managePlanBtn">Manage Plan</button>
     </form>
 
     <!-- Delete Reward Modal Start-->
@@ -844,15 +861,16 @@
 
         var url = window.location.href;
         if (url.indexOf("Premium") > -1) {
-            // Do nothing
+            document.getElementById("reg-tag").style.display = "none";
         }
         else if (url.indexOf("Standard") > -1) { 
-            //Do nothing
+            document.getElementById("reg-tag").style.display = "none";
         }
         else {
             //Guest
             var createBtn = document.getElementById("createBtn");
             createBtn.style.display = "none";
+            document.getElementById("logout-tag").style.display = "none";
         }
 
     });
@@ -898,7 +916,6 @@
                     var url = location.href;
                     if (url.indexOf("?") > -1) {
                         var baseUrl = url.split('?')[0].split('=');
-                        alert(baseUrl);
                         window.location.href = baseUrl + "?msg=createSuccess"
                     } else {
                         window.location.href = location.href + "?msg=createSuccess";

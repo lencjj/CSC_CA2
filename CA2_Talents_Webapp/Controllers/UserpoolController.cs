@@ -72,8 +72,8 @@ namespace CA2_Talents_Webapp.Controllers
                 StripeConfiguration.ApiKey = "sk_test_51GxEfiHhYK7K9XttqUpv12yjajZLs01TY95VhvzVfPEb5Ed8GaF3GFUV2iuhFZGkBgHoNib4iHBDlpALqWPplth6008EdMnnaw";
                 var service = new CustomerService();
                 Customer customer = service.Get(stripeId);
-                var subscriptions = customer.Subscriptions; 
-                for(int i = 0; i < subscriptions.Count(); i++) 
+                var subscriptions = customer.Subscriptions;
+                for (int i = 0; i < subscriptions.Count(); i++) 
                 {
                     if (subscriptions.ElementAt(i).Plan.Id.Equals(standardPlan))
                     {
@@ -89,12 +89,12 @@ namespace CA2_Talents_Webapp.Controllers
                 if (userType == "Standard user")
                 {
                     await UpdateUserLastAccessed(loginCreds.Email, "Logged In");
-                    return Redirect("/Home/Main/" + email + "/" + userType);
+                    return Redirect("/Home/Main/" + email + "/" + userType + "/" + stripeId);
                 }
                 else if (userType == "Premium user")
                 {
                     await UpdateUserLastAccessed(loginCreds.Email, "Logged In");
-                    return Redirect("/Home/Main/" + email + "/" + userType);
+                    return Redirect("/Home/Main/" + email + "/" + userType + "/" + stripeId);
                 }
                 else
                 { 
