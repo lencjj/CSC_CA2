@@ -2,10 +2,19 @@
     ViewData["Title"] = "Discussion";
 }
 
+<script src="https://use.fontawesome.com/releases/v5.14.0/js/all.js" data-auto-replace-svg="nest"></script>
 <link rel="stylesheet" href="~/css/Discussion.css">
+
+<div class="exitAccountContainer" id="exitAccountContainer">
+    <a href="/" class="logout-tag" id="logout-tag">Logout</a>
+    <a href="/Home/Register" class="reg-tag" id="reg-tag">Sign up an account</a>
+</div>
 <h2 class="pageHeader"> WELCOME TO THE TALENT'S PROFILE</h2>
 <div class="card" id="talentInfoContainer">
     <div class="card-header">
+        <div id="backBtn" onclick="goBack()">
+            <i class="fas fa-chevron-left"></i>
+        </div>
         <h3 id="singleTalentTitle">Title</h3>
     </div>
     <div class="card-body">
@@ -62,13 +71,14 @@
         var disqusDiv = document.getElementById("disqus_thread");
         var recommendationDiv = document.getElementById("inlineDiv");
         if (url.indexOf("Premium") > -1) {
-            // Do nothing
+            document.getElementById("reg-tag").style.display = "none";
         } else if (url.indexOf("Standard") > -1) { // here
             disqusDiv.style.display = "none";
-            // we aer  good
+            document.getElementById("reg-tag").style.display = "none";
         } else {
             disqusDiv.style.display = "none";
             recommendationDiv.style.display = "none";
+            document.getElementById("logout-tag").style.display = "none";
 
         }
         talentName = getUrlParameter("TalentName");
@@ -116,7 +126,7 @@
                 return;
             }
             console.log(res.recomms);
-            for (var i = 0; i < 3; i++) {
+            for (var i = 0; i < res.recomms.length; i++) {
                 recomStr += res.recomms[i].id + ", ";
             }
 
@@ -183,6 +193,10 @@
             }
         }
     }
+
+    function goBack() {
+        window.history.back();
+    }
 </script>
 
 
@@ -192,34 +206,4 @@
     </a>
 </noscript>
 
-
-<style>
-    #recommendations {
-        font-size: 2rem;
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        vertical-align: middle;
-        margin-left: 2rem;
-        color: royalblue;
-    }
-
-    #singleTalentImageURL {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    #inlineDiv p, #inlineDiv button {
-        display: inline;
-    }
-
-    @@keyframes pulse-animation {
-        0% {
-            box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2);
-        }
-
-        100% {
-            box-shadow: 0 0 0 20px rgba(0, 0, 0, 0);
-        }
-    }
-</style>
 

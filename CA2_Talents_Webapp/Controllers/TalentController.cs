@@ -55,6 +55,7 @@ namespace CA2_Talents_Webapp.Controllers
             return new JsonResult(recordList);
         }
 
+
         [HttpPost]
         public async Task<string> CreateTalent(Talent talent, IFormFile talentImgFile)
         {
@@ -66,57 +67,54 @@ namespace CA2_Talents_Webapp.Controllers
             }
             else
             {
-                imageName = talentImgFile.FileName;
-                var dir = _env.ContentRootPath + "/Images";
-                string path = Path.Combine(dir, talentImgFile.FileName);
-                using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write))
+                try
                 {
-                    talentImgFile.CopyTo(fileStream);
-                }
+                    imageName = talentImgFile.FileName;
+                    var dir = _env.WebRootPath;
+                    string path = Path.Combine(dir, talentImgFile.FileName);
+                    using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write))
+                    {
+                        talentImgFile.CopyTo(fileStream);
+                    }
+                    // Instantiates a client
+                    var client = ImageAnnotatorClient.Create();
+                    // Load the image file into memory
+                    var image = Image.FromFile(path);
+                    // Check for NSFW images
+                    var response = client.DetectSafeSearch(image);
+                    if (response.Adult.ToString().Equals("Likely") || response.Adult.ToString().Equals("VeryLikely"))
+                    {
+                        System.IO.File.Delete(path);
+                        return "NSFW";
+                    }
+                    if (response.Racy.ToString().Equals("Likely") || response.Racy.ToString().Equals("VeryLikely"))
+                    {
+                        System.IO.File.Delete(path);
+                        return "NSFW";
+                    }
+                    if (response.Violence.ToString().Equals("Likely") || response.Violence.ToString().Equals("VeryLikely"))
+                    {
+                        System.IO.File.Delete(path);
+                        return "NSFW";
+                    }
+                    if (response.Medical.ToString().Equals("Likely") || response.Medical.ToString().Equals("VeryLikely"))
+                    {
+                        System.IO.File.Delete(path);
+                        return "NSFW";
+                    }
+                    if (response.Spoof.ToString().Equals("Likely") || response.Spoof.ToString().Equals("VeryLikely"))
+                    {
+                        System.IO.File.Delete(path);
+                        return "NSFW";
+                    }
 
-            //Authenticate to the service by using Service Account
-            string relativePath = @"../../CSC_CA2/CA2_Talents_Webapp/GoogleVisionAI.json";
-            string credential_path = System.IO.Path.GetFullPath(relativePath);
-            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
-
-            // Instantiates a client
-            var client = ImageAnnotatorClient.Create();
-            // Load the image file into memory
-            var image = Image.FromFile(path);
-            // Check for NSFW images
-            var response = client.DetectSafeSearch(image);
-            if (response.Adult.ToString().Equals("Likely") || response.Adult.ToString().Equals("VeryLikely"))
-            {
-                System.IO.File.Delete(path);
-                return "NSFW";
+                    await _service.UploadFileAsync(path);
+                    System.IO.File.Delete(path);
+                } catch(Exception ex)
+                {
+                    return ex.Message;
+                }              
             }
-            if (response.Racy.ToString().Equals("Likely") || response.Racy.ToString().Equals("VeryLikely"))
-            {
-                System.IO.File.Delete(path);
-                return "NSFW";
-            }
-            if (response.Violence.ToString().Equals("Likely") || response.Violence.ToString().Equals("VeryLikely"))
-            {
-                System.IO.File.Delete(path);
-                return "NSFW";
-            }
-            if (response.Medical.ToString().Equals("Likely") || response.Medical.ToString().Equals("VeryLikely"))
-            {
-                System.IO.File.Delete(path);
-                return "NSFW";
-            }
-            if (response.Spoof.ToString().Equals("Likely") || response.Spoof.ToString().Equals("VeryLikely"))
-            {
-                System.IO.File.Delete(path);
-                return "NSFW";
-            }
-
-                await _service.UploadFileAsync(path);
-                System.IO.File.Delete(path);
-
-            }
-
-
 
             TalentDb talentDb = new TalentDb(configuration);
             talent.ImageURL = imageName;
@@ -125,6 +123,7 @@ namespace CA2_Talents_Webapp.Controllers
         }
 
 
+        [HttpPost]
         public async Task<string> UpdateTalent(Talent talent, IFormFile talentImgFile)
         {
             string imageName = talent.ImageURL;
@@ -135,60 +134,62 @@ namespace CA2_Talents_Webapp.Controllers
             }
             else
             {
-                imageName = talentImgFile.FileName;
-                var dir = _env.ContentRootPath + "/Images";
-                string path = Path.Combine(dir, talentImgFile.FileName);
-                using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write))
+                try
                 {
-                    talentImgFile.CopyTo(fileStream);
-                }
+                    imageName = talentImgFile.FileName;
+                    var dir = _env.WebRootPath;
+                    string path = Path.Combine(dir, talentImgFile.FileName);
+                    using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write))
+                    {
+                        talentImgFile.CopyTo(fileStream);
+                    }
 
-                //Authenticate to the service by using Service Account
-                string relativePath = @"../../CSC_CA2/CA2_Talents_Webapp/GoogleVisionAI.json";
-                string credential_path = System.IO.Path.GetFullPath(relativePath);
-                Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
-                // Instantiates a client
-                var client = ImageAnnotatorClient.Create();
-                // Load the image file into memory
-                var image = Image.FromFile(path);
-                // Check for NSFW images
-                var response = client.DetectSafeSearch(image);
-                if (response.Adult.ToString().Equals("Likely") || response.Adult.ToString().Equals("VeryLikely"))
-                {
-                    System.IO.File.Delete(path);
-                    return "NSFW";
-                }
-                if (response.Racy.ToString().Equals("Likely") || response.Racy.ToString().Equals("VeryLikely"))
-                {
-                    System.IO.File.Delete(path);
-                    return "NSFW";
-                }
-                if (response.Violence.ToString().Equals("Likely") || response.Violence.ToString().Equals("VeryLikely"))
-                {
-                    System.IO.File.Delete(path);
-                    return "NSFW";
-                }
-                if (response.Medical.ToString().Equals("Likely") || response.Medical.ToString().Equals("VeryLikely"))
-                {
-                    System.IO.File.Delete(path);
-                    return "NSFW";
-                }
-                if (response.Spoof.ToString().Equals("Likely") || response.Spoof.ToString().Equals("VeryLikely"))
-                {
-                    System.IO.File.Delete(path);
-                    return "NSFW";
-                }
+                    // Instantiates a client
+                    var client = ImageAnnotatorClient.Create();
+                    // Load the image file into memory
+                    var image = Image.FromFile(path);
+                    // Check for NSFW images
+                    var response = client.DetectSafeSearch(image);
+                    if (response.Adult.ToString().Equals("Likely") || response.Adult.ToString().Equals("VeryLikely"))
+                    {
+                        System.IO.File.Delete(path);
+                        return "NSFW";
+                    }
+                    if (response.Racy.ToString().Equals("Likely") || response.Racy.ToString().Equals("VeryLikely"))
+                    {
+                        System.IO.File.Delete(path);
+                        return "NSFW";
+                    }
+                    if (response.Violence.ToString().Equals("Likely") || response.Violence.ToString().Equals("VeryLikely"))
+                    {
+                        System.IO.File.Delete(path);
+                        return "NSFW";
+                    }
+                    if (response.Medical.ToString().Equals("Likely") || response.Medical.ToString().Equals("VeryLikely"))
+                    {
+                        System.IO.File.Delete(path);
+                        return "NSFW";
+                    }
+                    if (response.Spoof.ToString().Equals("Likely") || response.Spoof.ToString().Equals("VeryLikely"))
+                    {
+                        System.IO.File.Delete(path);
+                        return "NSFW";
+                    }
 
-                await _service.UploadFileAsync(path);
-                System.IO.File.Delete(path);
+                    await _service.UploadFileAsync(path);
+                    System.IO.File.Delete(path);
 
+                } catch(Exception ex)
+                {
+                    return ex.Message;
+                }
             }
             TalentDb talentDb = new TalentDb(configuration);
             talent.ImageURL = imageName;
             talentDb.editTalent(talent);
             return "Successfully updated";
         }
-        
+
         [HttpDelete]
         public string DeleteTalent(int talentId)
         {

@@ -93,21 +93,24 @@ namespace CA2_Talents_Webapp.Controllers
             return View();
         }
 
-        public IActionResult Main(string name, string plan)
+        public IActionResult Main(string name, string plan, string stripeId)
         {
             if (name == null || plan == null)
             {
                 TempData["name"] = "";
                 TempData["plan"] = "";
+                TempData["stripeId"] = "";
             }
             else if (name.Length > 0 && plan.Length > 0) {
                 TempData["name"] = name;
                 TempData["plan"] = plan;
+                TempData["stripeId"] = stripeId;
             }
             else
             {
                 TempData["name"] = "";
                 TempData["plan"] = "";
+                TempData["stripeId"] = "";
             }              
             TempData.Keep();
             return View();

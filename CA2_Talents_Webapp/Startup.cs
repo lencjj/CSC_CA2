@@ -67,6 +67,9 @@ namespace CA2_Talents_Webapp
             Environment.SetEnvironmentVariable("AWS_SECRET_ACCESS_KEY", Configuration["AWS:SecretKey"]);
             Environment.SetEnvironmentVariable("AWS_REGION", Configuration["AWS:Region"]);
 
+            string credential_path = "C:\\inetpub\\AspNetCoreWebApps\\app\\GoogleVisionAI.json";
+            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
+
             services.AddAWSService<IAmazonDynamoDB>();
 
             services.AddSingleton<ICreateTable, CreateTable>();
@@ -105,21 +108,9 @@ namespace CA2_Talents_Webapp
 
             app.UseMvc(routes =>
             {
-                // Standard User 
-                routes.MapRoute(
-                    name: "Standard Main Page",
-                    template: "{controller=Home}/{action=StandardUser}/{name}"
-                    );
-
-                routes.MapRoute(
-                    name: "Standard Talent Page",
-                    template: "{controller=Home}/{action=StandardTalent}/{name}"
-                    );
-
-
                 routes.MapRoute(
                     name: "premium",
-                    template: "{controller=Home}/{action=Main}/{name}/{plan}"
+                    template: "{controller=Home}/{action=Main}/{name}/{plan}/{stripeId}"
                     );
 
                 routes.MapRoute(

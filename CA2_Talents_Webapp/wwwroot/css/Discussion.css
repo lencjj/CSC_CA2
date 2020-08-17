@@ -1,6 +1,12 @@
 ﻿body {
 }
 
+.exitAccountContainer {
+    position: absolute;
+    top: 2%;
+    right: 2%;
+}
+
 .pageHeader {
     margin: 0 auto 5rem auto;
     padding: 0;
@@ -36,6 +42,53 @@
 #talentInfoContainer .card-text {
     margin-left: 5rem;
 }
+
+#recommendations {
+    font-size: 2rem;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    vertical-align: middle;
+    margin-left: 2rem;
+    color: royalblue;
+}
+
+#singleTalentImageURL {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#inlineDiv p, #inlineDiv button {
+    display: inline;
+}
+
+.card-header {
+    display: flex;
+}
+
+#singleTalentTitle {
+    margin: auto 0;
+}
+
+#backBtn {
+    margin: auto 0;
+    cursor: pointer;
+}
+
+    #backBtn i svg {
+        height: 2rem;
+        width: 2rem;
+    }
+
+@@keyframes pulse-animation {
+    0% {
+        box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2);
+    }
+
+    100% {
+        box-shadow: 0 0 0 20px rgba(0, 0, 0, 0);
+    }
+}
+
 
 /*#showCommentsBtn {
     float: right;

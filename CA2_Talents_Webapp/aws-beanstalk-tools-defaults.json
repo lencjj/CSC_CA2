@@ -1,0 +1,25 @@
+
+{
+    "region" : "us-west-2",
+    "configuration" : "Debug",
+    "framework"     : "netcoreapp2.1",
+    "self-contained" : false,
+    "application"    : "TLTTWebapp",
+    "environment"    : "TLTTWebapp-dev",
+    "enable-xray"    : false,
+    "enhanced-health-type" : "basic",
+    "additional-options"   : "\"aws:autoscaling:launchconfiguration,SecurityGroups\"=\"sg-c324ea95\";\"aws:ec2:vpc,Subnets\"=\"subnet-a1895cd9\";\"aws:ec2:vpc,ELBSubnets\"=\"subnet-a1895cd9,subnet-fdd589d6,subnet-0e00f744,subnet-dc933781\"",
+    "solution-stack"       : "64bit Windows Server 2019 v2.5.8 running IIS 10.0",
+    "environment-type"     : "LoadBalanced",
+    "loadbalancer-type"    : "application",
+    "cname"                : "tlttwebapp-dev",
+    "instance-type"        : "t2.micro",
+    "key-pair"             : "talentAdmin",
+    "health-check-url"     : "/",
+    "instance-profile"     : "aws-elasticbeanstalk-ec2-role",
+    "service-role"         : "aws-elasticbeanstalk-service-role",
+    "proxy-server"         : "nginx",
+    "profile"              : "deployAgent",
+    "iis-website"          : "Default Web Site",
+    "app-path"             : "/"
+}

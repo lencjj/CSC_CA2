@@ -15,6 +15,8 @@ using System.Configuration;
 using System.Globalization;
 using DynamoDb.libs.DynamoDb;
 using System.Reflection.Metadata.Ecma335;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore.ValueGeneration.Internal;
 
 namespace CA2_Talents_Webapp.Controllers
 {
@@ -28,13 +30,15 @@ namespace CA2_Talents_Webapp.Controllers
         private readonly IAddUser _addUser;
         private readonly IGetUser _getUser;
         private readonly IUpdateUser _updateUser;
+        private IHostingEnvironment _env;
 
         // Constructor
-        public BillingController(IAddUser addUser, IGetUser getUser, IUpdateUser updateUser)
+        public BillingController(IAddUser addUser, IGetUser getUser, IUpdateUser updateUser, IHostingEnvironment env)
         {
             _addUser = addUser;
             _getUser = getUser;
             _updateUser = updateUser;
+            _env = env;
         }
 
         // DynamoDb methods -------------------------------------------------------------------------------------- 
@@ -164,17 +168,12 @@ namespace CA2_Talents_Webapp.Controllers
         }
 
         [HttpPost]
-        public IActionResult InsertBQData(string username, string userplan)
+        public IActionResult InsertBQData(string username, string userplan, string customerId)
         {
             try
             {
-                string relativePath = @"../../CSC_CA2/CA2_Talents_Webapp/GoogleBigQuery.json";
-                string credential_path = System.IO.Path.GetFullPath(relativePath);
-                Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
-
-                string projectId = "turnkey-guild-265901";
+                string projectId = "task8-imagerecognition-281418";
                 DateTime now = DateTime.Now;
-                Console.Clear();
                 Console.WriteLine("email: " + username);
                 Console.WriteLine("plan: " + userplan);
 
@@ -199,24 +198,30 @@ namespace CA2_Talents_Webapp.Controllers
                     { "planType", userplan }
                 });
                 Console.WriteLine("Inserted: " + username + " successfully");
-                return Redirect("/Home/Main/"+ username + "/" + userplan + "?Msg=Success");
+                return Redirect("/Home/Main/"+ username + "/" + userplan + "/" + customerId + "?Msg=Success");
             }// End of try
             catch (Exception ex)
             {
-                Console.WriteLine("Error: " + ex);
-                return Redirect("/Home/Main/" + username + "/" + userplan + "?Msg=Error");
+                Console.WriteLine("Error: " + ex.Message);
+                return Redirect("/Home/Main/" + username + "/" + userplan + "/" + customerId + "?Msg=Failed");
             }
         }// End of insertBQData
 
         [HttpPost]
-        public ActionResult CreateSession()
+        public ActionResult CreateSession(string customerId, string username, string userplan)
         {
             StripeConfiguration.ApiKey = "sk_test_51GxEfiHhYK7K9XttqUpv12yjajZLs01TY95VhvzVfPEb5Ed8GaF3GFUV2iuhFZGkBgHoNib4iHBDlpALqWPplth6008EdMnnaw";
-
+            if (userplan.Contains("Premium"))
+            {
+                userplan = "Premium%20user";
+            } else if (userplan.Contains("Standard"))
+            {
+                userplan = "Standard%20user";
+            }
             var options = new SessionCreateOptions
             {
-                Customer = "cus_HWIVyLfT0yhlOg",
-                ReturnUrl = "https://localhost:44356/Home/Billing",
+                Customer = customerId,
+                ReturnUrl = "https://localhost:5001/Home/Main/" + username + "/" + userplan + "/" + customerId,
             };
             var service = new SessionService();
             Session session = service.Create(options);
