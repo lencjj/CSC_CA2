@@ -14,7 +14,7 @@ namespace CA2_Talents_Webapp.Services
         {
             try
             {
-                var credentials = new BasicAWSCredentials("AKIAIF43C5IMQEB3OY4Q", "L8b6h1wIPi4SxCpmqxkh/VN6F7THO8Cm88pmejxS");
+                var credentials = new BasicAWSCredentials("Insert Key Here");
                 var config = new AmazonS3Config
                 {
                     RegionEndpoint = Amazon.RegionEndpoint.APSoutheast1
